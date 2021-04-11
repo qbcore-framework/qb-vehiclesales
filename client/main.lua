@@ -1,14 +1,3 @@
-Keys = {
-    ['ESC'] = 322, ['F1'] = 288, ['F2'] = 289, ['F3'] = 170, ['F5'] = 166, ['F6'] = 167, ['F7'] = 168, ['F8'] = 169, ['F9'] = 56, ['F10'] = 57,
-    ['~'] = 243, ['1'] = 157, ['2'] = 158, ['3'] = 160, ['4'] = 164, ['5'] = 165, ['6'] = 159, ['7'] = 161, ['8'] = 162, ['9'] = 163, ['-'] = 84, ['='] = 83, ['BACKSPACE'] = 177,
-    ['TAB'] = 37, ['Q'] = 44, ['W'] = 32, ['E'] = 38, ['R'] = 45, ['T'] = 245, ['Y'] = 246, ['U'] = 303, ['P'] = 199, ['['] = 39, [']'] = 40, ['ENTER'] = 18,
-    ['CAPS'] = 137, ['A'] = 34, ['S'] = 8, ['D'] = 9, ['F'] = 23, ['G'] = 47, ['H'] = 74, ['K'] = 311, ['L'] = 182,
-    ['LEFTSHIFT'] = 21, ['Z'] = 20, ['X'] = 73, ['C'] = 26, ['V'] = 0, ['B'] = 29, ['N'] = 249, ['M'] = 244, [','] = 82, ['.'] = 81,
-    ['LEFTCTRL'] = 36, ['LEFTALT'] = 19, ['SPACE'] = 22, ['RIGHTCTRL'] = 70,
-    ['HOME'] = 213, ['PAGEUP'] = 10, ['PAGEDOWN'] = 11, ['DELETE'] = 178,
-    ['LEFT'] = 174, ['RIGHT'] = 175, ['TOP'] = 27, ['DOWN'] = 173,
-}
-
 QBCore = nil
 
 Citizen.CreateThread(function()
@@ -82,7 +71,7 @@ Citizen.CreateThread(function()
                             end
                         end
                     DrawText3Ds(Config.SellVehicleBack["x"], Config.SellVehicleBack["y"], Config.SellVehicleBack["z"], '~g~E~w~ - Sell Vehicle To Dealer For ~g~$'..math.floor(sellVehData.price / 2))
-                    if IsControlJustPressed(0, Keys["E"]) then
+                    if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                             if owned then
                                 TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
@@ -107,11 +96,11 @@ Citizen.CreateThread(function()
                                 DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, QBCore.Shared.Vehicles[Config.OccasionSlots[i]["model"]]["name"]..', Price: ~g~$'..Config.OccasionSlots[i]["price"])
                                 if Config.OccasionSlots[i]["owner"] == QBCore.Functions.GetPlayerData().citizenid then
                                     DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.05, '~r~G~w~ Cancel Vehicle Sale')
-                                    if IsControlJustPressed(0, Keys["G"]) then
+                                    if IsControlJustPressed(0, 47) then
                                         isConfirming = true
                                     end
                                 end
-                                if IsControlJustPressed(0, Keys["E"]) then
+                                if IsControlJustPressed(0, 38) then
                                     currentVehicle = i
                                     
                                     QBCore.Functions.TriggerCallback('qb-occasions:server:getSellerInformation', function(info)
@@ -133,12 +122,12 @@ Citizen.CreateThread(function()
                             else
                                 DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, 'Are you sure you no longer want to sell your vehicle?')
                                 DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, '~g~7~w~ - Yes | ~r~8~w~ - No')
-                                if IsDisabledControlJustPressed(0, Keys["7"]) then
+                                if IsDisabledControlJustPressed(0, 161) then
                                     isConfirming = false
                                     currentVehicle = i
                                     TriggerServerEvent("qb-occasions:server:ReturnVehicle", Config.OccasionSlots[i])
                                 end
-                                if IsDisabledControlJustPressed(0, Keys["8"]) then
+                                if IsDisabledControlJustPressed(0, 162) then
                                     isConfirming = false
                                 end
                             end
@@ -152,7 +141,7 @@ Citizen.CreateThread(function()
                     DrawMarker(2, Config.SellVehicle["x"], Config.SellVehicle["y"], Config.SellVehicle["z"] + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
                     if sellDist <= 3.5 and IsPedInAnyVehicle(ped) then
                         DrawText3Ds(Config.SellVehicle["x"], Config.SellVehicle["y"], Config.SellVehicle["z"], '~g~E~w~ - Place Vehicle For Sale By Owner')
-                        if IsControlJustPressed(0, Keys["E"]) then
+                        if IsControlJustPressed(0, 38) then
                             local VehiclePlate = GetVehicleNumberPlateText(GetVehiclePedIsIn(ped))
                             QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                                 if owned then
