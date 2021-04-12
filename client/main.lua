@@ -333,6 +333,6 @@ Citizen.CreateThread(function()
     SetBlipColour(OccasionBlip, 3)
 
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentSubstringPlayerName("Big Paulie Budget Cars")
+    AddTextComponentSubstringPlayerName("Used Vehicle Lot")
     EndTextCommandSetBlipName(OccasionBlip)
 end)
