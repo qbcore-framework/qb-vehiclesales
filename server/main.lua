@@ -13,19 +13,6 @@ QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(sour
     end)
 end)
 
-QBCore.Functions.CreateCallback("qb-garage:server:checkVehicleOwner", function(source, cb, plate)
-    local src = source
-    local pData = QBCore.Functions.GetPlayer(src)
-
-    exports['ghmattimysql']:execute('SELECT * FROM player_vehicles WHERE plate = @plate AND citizenid = @citizenid', {['@plate'] = plate, ['@citizenid'] = pData.PlayerData.citizenid}, function(result)
-        if result[1] ~= nil then
-            cb(true)
-        else
-            cb(false)
-        end
-    end)
-end)
-
 QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", function(source, cb, citizenid)
     local src = source
 
