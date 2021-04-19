@@ -78,46 +78,6 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
 
     QBCore.Functions.ExecuteSql(false, "SELECT * FROM `occasion_vehicles` WHERE `plate` = '"..vehicleData['plate'].."' AND `occasionid` = '"..vehicleData["oid"].."'", function(result)
         if result[1] ~= nil and next(result[1]) ~= nil then
-            -- if Player.PlayerData.money.cash >= result[1].price then
-            --     local SellerCitizenId = result[1].seller
-            --     local SellerData = QBCore.Functions.GetPlayerByCitizenId(SellerCitizenId)
-            --     -- New price calculation minus tax
-            --     local NewPrice = math.ceil((result[1].price / 100) * 77)
-
-            --     Player.Functions.RemoveMoney('cash', result[1].price)
-
-            --     -- Insert vehicle for buyer
-            --     QBCore.Functions.ExecuteSql(false, "INSERT INTO `player_vehicles` (`steam`, `citizenid`, `vehicle`, `hash`, `mods`, `plate`, `state`) VALUES ('"..Player.PlayerData.steam.."', '"..Player.PlayerData.citizenid.."', '"..result[1].model.."', '"..GetHashKey(result[1].model).."', '"..result[1].mods.."', '"..result[1].plate.."', '0')")
-                
-            --     -- Handle money transfer
-            --     if SellerData ~= nil then
-            --         -- Add money for online
-            --         SellerData.Functions.AddMoney('bank', NewPrice)
-            --     else
-            --         -- Add money for offline
-            --         QBCore.Functions.ExecuteSql(true, "SELECT * FROM `players` WHERE `citizenid` = '"..SellerCitizenId.."'", function(BuyerData)
-            --             if BuyerData[1] ~= nil then
-            --                 local BuyerMoney = json.decode(BuyerData[1].money)
-            --                 BuyerMoney.bank = BuyerMoney.bank + NewPrice
-            --                 QBCore.Functions.ExecuteSql(false, "UPDATE `players` SET `money` = '"..json.encode(BuyerMoney).."' WHERE `citizenid` = '"..SellerCitizenId.."'")
-            --             end
-            --         end)
-            --     end
-
-            --     TriggerEvent("qb-log:server:sendLog", Player.PlayerData.citizenid, "vehiclebought", {model = result[1].model, from = SellerCitizenId, moneyType = "cash", vehiclePrice = result[1].price, plate = result[1].plate})
-            --     TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Bought", "green", "**"..GetPlayerName(src) .. "** has bought for "..result[1].price .. " (" .. result[1].plate .. ") from **"..SellerCitizenId.."**")
-            --     TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
-            
-            --     -- Delete vehicle from Occasion
-            --     QBCore.Functions.ExecuteSql(false, "DELETE FROM `occasion_vehicles` WHERE `plate` = '"..result[1].plate.."' and `occasionid` = '"..result[1].occasionid.."'")
-
-            --     -- Send selling mail to seller
-            --     TriggerEvent('qb-phone:server:sendNewMailToOffline', SellerCitizenId, {
-            --         sender = "Mosleys Occasions",
-            --         subject = "You have sold a vehicle!",
-            --         message = "You "..QBCore.Shared.Vehicles[result[1].model].name.." is sold for $"..result[1].price..",-!"
-            --     })
-            -- else
             if Player.PlayerData.money.bank >= result[1].price then
                 local SellerCitizenId = result[1].seller
                 local SellerData = QBCore.Functions.GetPlayerByCitizenId(SellerCitizenId)
