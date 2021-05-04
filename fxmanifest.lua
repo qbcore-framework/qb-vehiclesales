@@ -6,8 +6,6 @@ version '1.0.0'
 
 ui_page "html/ui.html"
 
-description 'QB Occasions'
-
 client_scripts {
 	'client/main.lua',
 	'config.lua',
