@@ -1,12 +1,9 @@
 QBCore = nil
 
 Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(10)
-        if QBCore == nil then
-            TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
-            Citizen.Wait(200)
-        end
+    while QBCore == nil do
+        TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
+        Citizen.Wait(200)
     end
 end)
 
@@ -14,7 +11,7 @@ end)
 
 function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
-    SetTextFont(4)
+    SetTextFont(1)
     SetTextProportional(1)
     SetTextColour(255, 255, 255, 215)
     SetTextEntry("STRING")
@@ -56,10 +53,10 @@ Citizen.CreateThread(function()
                 end
             end
 
-            local sellBackDist = #(pos - vector3(Config.SellVehicleBack["x"], Config.SellVehicleBack["y"], Config.SellVehicleBack["z"]))
+            local sellBackDist = #(pos - Config.SellVehicleBack)
             
             if sellBackDist <= 13.0 and IsPedInAnyVehicle(ped) then 
-                DrawMarker(2, Config.SellVehicleBack["x"], Config.SellVehicleBack["y"], Config.SellVehicleBack["z"] + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
+                DrawMarker(2, Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
                 if sellBackDist <= 3.5 and IsPedInAnyVehicle(ped) then
                     local price 
                     local sellVehData = {}
@@ -70,7 +67,7 @@ Citizen.CreateThread(function()
                                 sellVehData.price = tonumber(v["price"])
                             end
                         end
-                    DrawText3Ds(Config.SellVehicleBack["x"], Config.SellVehicleBack["y"], Config.SellVehicleBack["z"], '~g~E~w~ - Sell Vehicle To Dealer For ~g~$'..math.floor(sellVehData.price / 2))
+                    DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, '[~g~E~w~] - Sell Vehicle To Dealer For ~g~$'..math.floor(sellVehData.price / 2))
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                             if owned then
@@ -92,10 +89,10 @@ Citizen.CreateThread(function()
                     if dstCheck <= 2 then
                         if not IsPedInAnyVehicle(ped) then
                             if not isConfirming then
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, '~g~E~w~ View Vehicle Contract')
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, '[~g~E~w~] - View Vehicle Contract')
                                 DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, QBCore.Shared.Vehicles[Config.OccasionSlots[i]["model"]]["name"]..', Price: ~g~$'..Config.OccasionSlots[i]["price"])
                                 if Config.OccasionSlots[i]["owner"] == QBCore.Functions.GetPlayerData().citizenid then
-                                    DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.05, '~r~G~w~ Cancel Vehicle Sale')
+                                    DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.05, '[~r~G~w~] - Cancel Vehicle Sale')
                                     if IsControlJustPressed(0, 47) then
                                         isConfirming = true
                                     end
@@ -121,7 +118,7 @@ Citizen.CreateThread(function()
                                 end
                             else
                                 DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, 'Are you sure you no longer want to sell your vehicle?')
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, '~g~7~w~ - Yes | ~r~8~w~ - No')
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, '[~g~7~w~] - Yes | [~r~8~w~] - No')
                                 if IsDisabledControlJustPressed(0, 161) then
                                     isConfirming = false
                                     currentVehicle = i
@@ -135,12 +132,12 @@ Citizen.CreateThread(function()
                     end
                 end
 
-                local sellDist = #(pos - vector3(Config.SellVehicle["x"], Config.SellVehicle["y"], Config.SellVehicle["z"]))
+                local sellDist = #(pos - Config.SellVehicle)
 
                 if sellDist <= 13.0 and IsPedInAnyVehicle(ped) then 
-                    DrawMarker(2, Config.SellVehicle["x"], Config.SellVehicle["y"], Config.SellVehicle["z"] + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
+                    DrawMarker(2, Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
                     if sellDist <= 3.5 and IsPedInAnyVehicle(ped) then
-                        DrawText3Ds(Config.SellVehicle["x"], Config.SellVehicle["y"], Config.SellVehicle["z"], '~g~E~w~ - Place Vehicle For Sale By Owner')
+                        DrawText3Ds(Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z, '[~g~E~w~] - Place Vehicle For Sale By Owner')
                         if IsControlJustPressed(0, 38) then
                             local VehiclePlate = GetVehicleNumberPlateText(GetVehiclePedIsIn(ped))
                             QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
@@ -256,7 +253,7 @@ AddEventHandler('qb-occasions:client:BuyFinished', function(vehdata)
         SetVehicleNumberPlateText(veh, vehdata.plate)
         SetEntityHeading(veh, Config.BuyVehicle.h)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-        exports['LegacyFuel']:SetFuel(veh, 100)
+        SetVehicleFuelLevel(veh, 100)
         QBCore.Functions.Notify("Vehicle Bought", "success", 2500)
         TriggerEvent("vehiclekeys:client:SetOwner", vehdata.plate)
         SetVehicleEngineOn(veh, true, true)
@@ -277,7 +274,7 @@ AddEventHandler('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
         SetVehicleNumberPlateText(veh, vehdata.plate)
         SetEntityHeading(veh, Config.BuyVehicle.h)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-        exports['LegacyFuel']:SetFuel(veh, 100)
+        SetVehicleFuelLevel(veh, 100)
         QBCore.Functions.Notify("You vehicle is returned")
         TriggerEvent("vehiclekeys:client:SetOwner", vehdata.plate)
         SetVehicleEngineOn(veh, true, true)

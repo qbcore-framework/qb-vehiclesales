@@ -1,23 +1,8 @@
 Config = Config or {}
 
-Config.SellVehicle = {
-    ["x"] = 1235.43,
-    ["y"] = 2730.95,
-    ["z"] = 37.91,
-}
-
-Config.SellVehicleBack = {
-    ["x"] = 1235.1,
-    ["y"] = 2740.7,
-    ["z"] = 37.68,
-}
-
-Config.BuyVehicle =     {
-        ["x"] = 1213.31, 
-        ["y"] = 2735.4, 
-        ["z"] = 38.27, 
-        ["h"] = 182.5
-    }
+Config.SellVehicle = vector3(1235.43, 2730.95, 37.91)
+Config.SellVehicleBack = vector3(1235.1, 2740.7, 37.68)
+Config.BuyVehicle = {["x"] = 1213.31, ["y"] = 2735.4, ["z"] = 38.27, ["h"] = 182.5}
 
 Config.OccasionSlots = {
     {
