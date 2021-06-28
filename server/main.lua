@@ -4,7 +4,7 @@ TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
 -- Code
 
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
-    QBCore.Functions.ExecuteSql(false, 'SELECT * FROM `occasion_vehicles`', function(result)
+    exports.ghmattimysql:execute('SELECT * FROM occasion_vehicles', function(result)
         if result[1] ~= nil then
             cb(result)
         else
@@ -29,11 +29,19 @@ RegisterServerEvent('qb-occasions:server:ReturnVehicle')
 AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `occasion_vehicles` WHERE `plate` = '"..vehicleData['plate'].."' AND `occasionid` = '"..vehicleData["oid"].."'", function(result)
+    exports.ghmattimysql:execute('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]}, function(result)
         if result[1] ~= nil then 
             if result[1].seller == Player.PlayerData.citizenid then
-                QBCore.Functions.ExecuteSql(false, "INSERT INTO `player_vehicles` (`steam`, `citizenid`, `vehicle`, `hash`, `mods`, `plate`, `state`) VALUES ('"..Player.PlayerData.steam.."', '"..Player.PlayerData.citizenid.."', '"..vehicleData["model"].."', '"..GetHashKey(vehicleData["model"]).."', '"..vehicleData["mods"].."', '"..vehicleData["plate"].."', '0')")
-                QBCore.Functions.ExecuteSql(false, "DELETE FROM `occasion_vehicles` WHERE `occasionid` = '"..vehicleData["oid"].."' and `plate` = '"..vehicleData['plate'].."'")
+                exports.ghmattimysql:execute('INSERT INTO player_vehicles (steam, citizenid, vehicle, hash, mods, plate, state) VALUES (@steam, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
+                    ['@steam'] = Player.PlayerData.steam,
+                    ['@citizenid'] = Player.PlayerData.citizenid,
+                    ['@vehicle'] = vehicleData["model"],
+                    ['@hash'] = GetHashKey(vehicleData["model"]),
+                    ['@mods'] = vehicleData["mods"],
+                    ['@plate'] = vehicleData["plate"],
+                    ['@state'] = 0
+                })
+                exports.ghmattimysql:execute('DELETE FROM occasion_vehicles WHERE occasionid=@occasionid AND plate=@plate', {['@occasionid'] = vehicleData["oid"], ['@plate'] = vehicleData['plate']})
                 TriggerClientEvent("qb-occasions:client:ReturnOwnedVehicle", src, result[1])
                 TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
             else
@@ -75,8 +83,7 @@ RegisterServerEvent('qb-occasions:server:buyVehicle')
 AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-
-    QBCore.Functions.ExecuteSql(false, "SELECT * FROM `occasion_vehicles` WHERE `plate` = '"..vehicleData['plate'].."' AND `occasionid` = '"..vehicleData["oid"].."'", function(result)
+    exports.ghmattimysql:execute('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]}, function(result)
         if result[1] ~= nil and next(result[1]) ~= nil then
             if Player.PlayerData.money.bank >= result[1].price then
                 local SellerCitizenId = result[1].seller
@@ -87,8 +94,15 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 Player.Functions.RemoveMoney('bank', result[1].price)
 
                 -- Insert vehicle for buyer
-                QBCore.Functions.ExecuteSql(false, "INSERT INTO `player_vehicles` (`steam`, `citizenid`, `vehicle`, `hash`, `mods`, `plate`, `state`) VALUES ('"..Player.PlayerData.steam.."', '"..Player.PlayerData.citizenid.."', '"..result[1].model.."', '"..GetHashKey(result[1].model).."', '"..result[1].mods.."', '"..result[1].plate.."', '0')")
-                
+                exports.ghmattimysql:execute('INSERT INTO player_vehicles (steam, citizenid, vehicle, hash, mods, plate, state) VALUES (@steam, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
+                    ['@steam'] = Player.PlayerData.steam,
+                    ['@citizenid'] = Player.PlayerData.citizenid,
+                    ['@vehicle'] = result[1]["model"],
+                    ['@hash'] = GetHashKey(result[1]["model"]),
+                    ['@mods'] = result[1]["mods"],
+                    ['@plate'] = result[1]["plate"],
+                    ['@state'] = 0
+                })
                 -- Handle money transfer
                 if SellerData ~= nil then
                     -- Add money for online
@@ -99,7 +113,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                         if BuyerData[1] ~= nil then
                             local BuyerMoney = json.decode(BuyerData[1].money)
                             BuyerMoney.bank = BuyerMoney.bank + NewPrice
-                            QBCore.Functions.ExecuteSql(false, "UPDATE `players` SET `money` = '"..json.encode(BuyerMoney).."' WHERE `citizenid` = '"..SellerCitizenId.."'")
+                            exports.ghmattimysql:execute('UPDATE players SET money=@money WHERE citizenid=@citizenid', {['@money'] = json.encode(BuyerMoney), ['@citizenid'] = SellerCitizenId})
                         end
                     end)
                 end
@@ -110,8 +124,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
             
                 -- Delete vehicle from Occasion
-                QBCore.Functions.ExecuteSql(false, "DELETE FROM `occasion_vehicles` WHERE `plate` = '"..result[1].plate.."' and `occasionid` = '"..result[1].occasionid.."'")
-
+                exports.ghmattimysql:execute('DELETE FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = result[1].plate, ['@occasionid'] = result[1].occasionid})
                 -- Send selling mail to seller
                 TriggerEvent('qb-phone:server:sendNewMailToOffline', SellerCitizenId, {
                     sender = "Mosleys Occasions",
