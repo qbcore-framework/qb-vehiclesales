@@ -1,8 +1,3 @@
-QBCore = nil
-TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
-
--- Code
-
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
     exports.ghmattimysql:execute('SELECT * FROM occasion_vehicles', function(result)
         if result[1] ~= nil then
