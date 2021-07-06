@@ -279,7 +279,7 @@ RegisterNUICallback('sellVehicle', function(data)
     local vehicleData = {}
     local PlayerData = QBCore.Functions.GetPlayerData()
     vehicleData.ent = GetVehiclePedIsUsing(PlayerPedId())
-    vehicleData.model = QBCore.Shared.VehicleModels[GetEntityModel(vehicleData.ent)]["model"]
+    vehicleData.model = GetDisplayNameFromVehicleModel(GetEntityModel(vehicleData.ent)):lower()
     vehicleData.plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId()))
     vehicleData.mods = QBCore.Functions.GetVehicleProperties(vehicleData.ent)
     vehicleData.desc = data.desc
