@@ -27,8 +27,8 @@ AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
     exports.ghmattimysql:execute('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]}, function(result)
         if result[1] ~= nil then 
             if result[1].seller == Player.PlayerData.citizenid then
-                exports.ghmattimysql:execute('INSERT INTO player_vehicles (steam, citizenid, vehicle, hash, mods, plate, state) VALUES (@steam, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
-                    ['@steam'] = Player.PlayerData.steam,
+                exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
+                    ['@license'] = Player.PlayerData.license,
                     ['@citizenid'] = Player.PlayerData.citizenid,
                     ['@vehicle'] = vehicleData["model"],
                     ['@hash'] = GetHashKey(vehicleData["model"]),
@@ -89,8 +89,8 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 Player.Functions.RemoveMoney('bank', result[1].price)
 
                 -- Insert vehicle for buyer
-                exports.ghmattimysql:execute('INSERT INTO player_vehicles (steam, citizenid, vehicle, hash, mods, plate, state) VALUES (@steam, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
-                    ['@steam'] = Player.PlayerData.steam,
+                exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
+                    ['@license'] = Player.PlayerData.license,
                     ['@citizenid'] = Player.PlayerData.citizenid,
                     ['@vehicle'] = result[1]["model"],
                     ['@hash'] = GetHashKey(result[1]["model"]),
