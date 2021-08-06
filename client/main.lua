@@ -276,17 +276,25 @@ AddEventHandler('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
 end)
 
 RegisterNUICallback('sellVehicle', function(data)
-    local vehicleData = {}
-    local PlayerData = QBCore.Functions.GetPlayerData()
-    vehicleData.ent = GetVehiclePedIsUsing(PlayerPedId())
-    vehicleData.model = GetDisplayNameFromVehicleModel(GetEntityModel(vehicleData.ent)):lower()
-    vehicleData.plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId()))
-    vehicleData.mods = QBCore.Functions.GetVehicleProperties(vehicleData.ent)
-    vehicleData.desc = data.desc
-
-    TriggerServerEvent('qb-occasions:server:sellVehicle', data.price, vehicleData)
-    sellVehicleWait(data.price)
+    local plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId())) --Getting the plate and sending to the function
+    SellData(data,plate)
 end)
+
+function SellData(data,model)
+    QBCore.Functions.TriggerCallback("qb-vehiclesales:server:CheckModelName",function(DataReturning) 
+        local vehicleData = {}
+        local PlayerData = QBCore.Functions.GetPlayerData()
+        vehicleData.ent = GetVehiclePedIsUsing(PlayerPedId())
+        vehicleData.model = DataReturning 
+        vehicleData.plate = model
+        vehicleData.mods = QBCore.Functions.GetVehicleProperties(vehicleData.ent)
+        vehicleData.desc = data.desc
+        TriggerServerEvent('qb-occasions:server:sellVehicle', data.price, vehicleData)
+        sellVehicleWait(data.price)
+    end,model) --the older function GetDisplayNameFromVehicleModel doest like long names like Washington or Buccanner2
+end
+
+
 
 function sellVehicleWait(price)
     DoScreenFadeOut(250)
