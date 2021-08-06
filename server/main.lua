@@ -136,6 +136,13 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
     end
 end)
 
+QBCore.Functions.CreateCallback("qb-vehiclesales:server:CheckModelName",function(source,cb,plate) 
+    if plate then
+        local ReturnData = exports['ghmattimysql']:scalarSync("SELECT vehicle FROM `player_vehicles` WHERE plate = @plate",{['@plate'] = plate})
+        cb(ReturnData)
+    end
+end)
+
 function generateOID()
     local num = math.random(1, 10)..math.random(111, 999)
 
