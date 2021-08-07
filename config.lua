@@ -6,6 +6,7 @@ Config.BuyVehicle = {["x"] = 1213.31, ["y"] = 2735.4, ["z"] = 38.27, ["h"] = 182
 
 Config.OccasionSlots = {
     {
+        --vector3
         ["x"] = 1237.07, 
         ["y"] = 2699.0, 
         ["z"] = 38.27, 
