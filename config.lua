@@ -2,7 +2,7 @@ Config = Config or {}
 
 Config.SellVehicle = vector3(1235.43, 2730.95, 37.91)
 Config.SellVehicleBack = vector3(1235.1, 2740.7, 37.68)
-Config.BuyVehicle = {["x"] = 1213.31, ["y"] = 2735.4, ["z"] = 38.27, ["h"] = 182.5}
+Config.BuyVehicle = vector4(1213.31, 2735.4, 38.27, 182.5)
 
 Config.OccasionSlots = {
     {
