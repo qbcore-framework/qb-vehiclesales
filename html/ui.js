@@ -24,7 +24,7 @@ $(document).on('keydown', function() {
         case 27:
             $('.sell-container').fadeOut(100);
             $('.buy-container').fadeOut(100);
-            $.post('https://qb-vehiclesales/close');
+            $.post('https://${resourceName}/close');
             break;
     }
 });
@@ -32,29 +32,29 @@ $(document).on('keydown', function() {
 $(document).on('click', '#sell-vehicle', function(){
     if ($('.vehicle-sell-price').val() != "") {
         if (!isNaN($('.vehicle-sell-price').val())) {
-            $.post('https://qb-vehiclesales/sellVehicle', JSON.stringify({
+            $.post('https://${resourceName}/sellVehicle', JSON.stringify({
                 price: $('.vehicle-sell-price').val(),
                 desc: $('.vehicle-description').val()
             }));
         
             $('.sell-container').fadeOut(100);
-            $.post('https://qb-vehiclesales/close');
+            $.post('https://${resourceName}/close');
         } else {
-            $.post('https://qb-vehiclesales/error', JSON.stringify({
+            $.post('https://${resourceName}/error', JSON.stringify({
                 message: "Amount must be numbers.."
             }))
         }
     } else {
-        $.post('https://qb-vehiclesales/error', JSON.stringify({
+        $.post('https://${resourceName}/error', JSON.stringify({
             message: "Enter an amount.."
         }))
     }
 });
 
 $(document).on('click', '#buy-vehicle', function(){
-    $.post('https://qb-vehiclesales/buyVehicle');
+    $.post('https://${resourceName}/buyVehicle');
     $('.buy-container').fadeOut(100);
-    $.post('https://qb-vehiclesales/close');
+    $.post('https://${resourceName}/close');
 });
 
 QBOccasions.setupSellContract = function(data) {
