@@ -117,7 +117,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 end
             end
 
-            TriggerEvent("qb-log:server:sendLog", Player.PlayerData.citizenid, "vehiclebought", {model = result[1].model, from = SellerCitizenId, moneyType = "cash", vehiclePrice = result[1].price, plate = result[1].plate})
+            TriggerEvent("qb-log:server:CreateLog", Player.PlayerData.citizenid, "vehiclebought", {model = result[1].model, from = SellerCitizenId, moneyType = "cash", vehiclePrice = result[1].price, plate = result[1].plate})
             TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "bought", "green", "**"..GetPlayerName(src) .. "** has bought for "..result[1].price .. " (" .. result[1].plate .. ") from **"..SellerCitizenId.."**")
             TriggerClientEvent("qb-occasions:client:BuyFinished", src, result[1])
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
