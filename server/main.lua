@@ -1,5 +1,5 @@
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
-    local result = exports.ghmattimysql:executeSync('SELECT * FROM occasion_vehicles')
+    local result = exports.oxmysql:fetchSync('SELECT * FROM occasion_vehicles', {})
     if result[1] ~= nil then
         cb(result)
     else
@@ -10,7 +10,7 @@ end)
 QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", function(source, cb, citizenid)
     local src = source
 
-    exports['ghmattimysql']:execute('SELECT * FROM players WHERE citizenid = @citizenid', {['@citizenid'] = citizenid}, function(result)
+    exports.oxmysql:fetch('SELECT * FROM players WHERE citizenid = @citizenid', {['@citizenid'] = citizenid}, function(result)
         if result[1] ~= nil then
             cb(result[1])
         else
@@ -23,10 +23,10 @@ RegisterServerEvent('qb-occasions:server:ReturnVehicle')
 AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.ghmattimysql:executeSync('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]})
+    local result = exports.oxmysql:fetchSync('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]})
     if result[1] ~= nil then 
         if result[1].seller == Player.PlayerData.citizenid then
-            exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
+            exports.oxmysql:insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
                 ['@license'] = Player.PlayerData.license,
                 ['@citizenid'] = Player.PlayerData.citizenid,
                 ['@vehicle'] = vehicleData["model"],
@@ -35,7 +35,7 @@ AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
                 ['@plate'] = vehicleData["plate"],
                 ['@state'] = 0
             })
-            exports.ghmattimysql:execute('DELETE FROM occasion_vehicles WHERE occasionid=@occasionid AND plate=@plate', {['@occasionid'] = vehicleData["oid"], ['@plate'] = vehicleData['plate']})
+            exports.oxmysql:execute('DELETE FROM occasion_vehicles WHERE occasionid=@occasionid AND plate=@plate', {['@occasionid'] = vehicleData["oid"], ['@plate'] = vehicleData['plate']})
             TriggerClientEvent("qb-occasions:client:ReturnOwnedVehicle", src, result[1])
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
         else
@@ -50,8 +50,8 @@ RegisterServerEvent('qb-occasions:server:sellVehicle')
 AddEventHandler('qb-occasions:server:sellVehicle', function(vehiclePrice, vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    exports.ghmattimysql:execute('DELETE FROM player_vehicles WHERE plate=@plate AND vehicle=@vehicle', {['@plate'] = vehicleData.plate, ['@vehicle'] = vehicleData.model})
-    exports.ghmattimysql:execute('INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (@seller, @price, @description, @plate, @model, @mods, @occasionid)', {
+    exports.oxmysql:execute('DELETE FROM player_vehicles WHERE plate=@plate AND vehicle=@vehicle', {['@plate'] = vehicleData.plate, ['@vehicle'] = vehicleData.model})
+    exports.oxmysql:insert('INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (@seller, @price, @description, @plate, @model, @mods, @occasionid)', {
         ['@seller'] = Player.PlayerData.citizenid,
         ['@price'] = vehiclePrice,
         ['@description'] = escapeSqli(vehicleData.desc),
@@ -76,14 +76,14 @@ AddEventHandler('qb-occasions:server:sellVehicleBack', function(vData)
    
     Player.Functions.AddMoney('bank', price)
     TriggerClientEvent('QBCore:Notify', src, 'You have sold your car for $'..price, 'success', 5500)
-    exports.ghmattimysql:execute('DELETE FROM player_vehicles WHERE plate=@plate', {['@plate'] = plate, ['@citizenid'] = cid})
+    exports.oxmysql:execute('DELETE FROM player_vehicles WHERE plate=@plate', {['@plate'] = plate, ['@citizenid'] = cid})
 end)
 
 RegisterServerEvent('qb-occasions:server:buyVehicle')
 AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.ghmattimysql:executeSync('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]})
+    local result = exports.oxmysql:fetchSync('SELECT * FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = vehicleData['plate'], ['@occasionid'] = vehicleData["oid"]})
     if result[1] ~= nil and next(result[1]) ~= nil then
         if Player.PlayerData.money.bank >= result[1].price then
             local SellerCitizenId = result[1].seller
@@ -94,7 +94,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
             Player.Functions.RemoveMoney('bank', result[1].price)
 
             -- Insert vehicle for buyer
-            exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
+            exports.oxmysql:insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
                 ['@license'] = Player.PlayerData.license,
                 ['@citizenid'] = Player.PlayerData.citizenid,
                 ['@vehicle'] = result[1]["model"],
@@ -109,11 +109,11 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 SellerData.Functions.AddMoney('bank', NewPrice)
             else
                 -- Add money for offline
-                local BuyerData = exports.ghmattimysql:executeSync('SELECT * FROM players WHERE citizenid=@citizenid', {['@citizenid'] = SellerCitizenId})
+                local BuyerData = exports.oxmysql:fetchSync('SELECT * FROM players WHERE citizenid=@citizenid', {['@citizenid'] = SellerCitizenId})
                 if BuyerData[1] ~= nil then
                     local BuyerMoney = json.decode(BuyerData[1].money)
                     BuyerMoney.bank = BuyerMoney.bank + NewPrice
-                    exports.ghmattimysql:execute('UPDATE players SET money=@money WHERE citizenid=@citizenid', {['@money'] = json.encode(BuyerMoney), ['@citizenid'] = SellerCitizenId})
+                    exports.oxmysql:execute('UPDATE players SET money=@money WHERE citizenid=@citizenid', {['@money'] = json.encode(BuyerMoney), ['@citizenid'] = SellerCitizenId})
                 end
             end
 
@@ -123,7 +123,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
         
             -- Delete vehicle from Occasion
-            exports.ghmattimysql:execute('DELETE FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = result[1].plate, ['@occasionid'] = result[1].occasionid})
+            exports.oxmysql:execute('DELETE FROM occasion_vehicles WHERE plate=@plate AND occasionid=@occasionid', {['@plate'] = result[1].plate, ['@occasionid'] = result[1].occasionid})
             -- Send selling mail to seller
             TriggerEvent('qb-phone:server:sendNewMailToOffline', SellerCitizenId, {
                 sender = "Mosleys Occasions",
@@ -138,7 +138,7 @@ end)
 
 QBCore.Functions.CreateCallback("qb-vehiclesales:server:CheckModelName",function(source,cb,plate) 
     if plate then
-        local ReturnData = exports['ghmattimysql']:scalarSync("SELECT vehicle FROM `player_vehicles` WHERE plate = @plate",{['@plate'] = plate})
+        local ReturnData = exports.oxmysql:scalarSync("SELECT vehicle FROM `player_vehicles` WHERE plate = @plate",{['@plate'] = plate})
         cb(ReturnData)
     end
 end)
