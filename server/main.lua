@@ -28,7 +28,7 @@ AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
     if result[1] ~= nil then
         if result[1].seller == Player.PlayerData.citizenid then
             exports.oxmysql:insert(
-                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?)',
+                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 {Player.PlayerData.license, Player.PlayerData.citizenid, vehicleData["model"],
                  GetHashKey(vehicleData["model"]), vehicleData["mods"], vehicleData["plate"], 0})
             exports.oxmysql:execute('DELETE FROM occasion_vehicles WHERE occasionid = ? AND plate = ?',
@@ -50,7 +50,7 @@ AddEventHandler('qb-occasions:server:sellVehicle', function(vehiclePrice, vehicl
     exports.oxmysql:execute('DELETE FROM player_vehicles WHERE plate = ? AND vehicle = ?',
         {vehicleData.plate, vehicleData.model})
     exports.oxmysql:insert(
-        'INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (?)',
+        'INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (?, ?, ?, ?, ?, ?, ?)',
         {Player.PlayerData.citizenid, vehiclePrice, escapeSqli(vehicleData.desc), vehicleData.plate, vehicleData.model,
          json.encode(vehicleData.mods), generateOID()})
     TriggerEvent("qb-log:server:sendLog", Player.PlayerData.citizenid, "vehiclesold", {
@@ -93,7 +93,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
 
             -- Insert vehicle for buyer
             exports.oxmysql:insert(
-                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?)',
+                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 {Player.PlayerData.license, Player.PlayerData.citizenid, result[1]["model"],
                  GetHashKey(result[1]["model"]), result[1]["mods"], result[1]["plate"], 0})
             -- Handle money transfer
