@@ -93,9 +93,14 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
 
             -- Insert vehicle for buyer
             exports.oxmysql:insert(
-                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                {Player.PlayerData.license, Player.PlayerData.citizenid, result[1]["model"],
-                 GetHashKey(result[1]["model"]), result[1]["mods"], result[1]["plate"], 0})
+                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
+                    Player.PlayerData.license,
+                    Player.PlayerData.citizenid, result[1]["model"],
+                    GetHashKey(result[1]["model"]),
+                    result[1]["mods"],
+                    result[1]["plate"],
+                    0
+                })
             -- Handle money transfer
             if SellerData ~= nil then
                 -- Add money for online
@@ -107,8 +112,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 if BuyerData[1] ~= nil then
                     local BuyerMoney = json.decode(BuyerData[1].money)
                     BuyerMoney.bank = BuyerMoney.bank + NewPrice
-                    exports.oxmysql:execute('UPDATE players SET money = ? WHERE citizenid = ?',
-                        {json.encode(BuyerMoney), SellerCitizenId})
+                    exports.oxmysql:execute('UPDATE players SET money = ? WHERE citizenid = ?', {json.encode(BuyerMoney), SellerCitizenId})
                 end
             end
 
@@ -119,9 +123,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 vehiclePrice = result[1].price,
                 plate = result[1].plate
             })
-            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "bought", "green",
-                "**" .. GetPlayerName(src) .. "** has bought for " .. result[1].price .. " (" .. result[1].plate ..
-                    ") from **" .. SellerCitizenId .. "**")
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "bought", "green", "**" .. GetPlayerName(src) .. "** has bought for " .. result[1].price .. " (" .. result[1].plate ..") from **" .. SellerCitizenId .. "**")
             TriggerClientEvent("qb-occasions:client:BuyFinished", src, result[1])
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
 
@@ -130,10 +132,9 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 {result[1].plate, result[1].occasionid})
             -- Send selling mail to seller
             TriggerEvent('qb-phone:server:sendNewMailToOffline', SellerCitizenId, {
-                sender = "Mosleys Occasions",
+                sender = 'Larrys RV Sales',
                 subject = "You have sold a vehicle!",
-                message = "The " .. QBCore.Shared.Vehicles[result[1].model].name .. " has sold for $" .. result[1].price ..
-                    "!"
+                message = 'You made $'..NewPrice..' from the sale of your '..QBCore.Shared.Vehicles[result[1].model].name..''
             })
         else
             TriggerClientEvent('QBCore:Notify', src, 'You dont have enough money', 'error', 3500)
