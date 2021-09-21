@@ -180,7 +180,7 @@ function spawnOccasionsVehicles(vehicles)
             SetModelAsNoLongerNeeded(model)
             SetVehicleOnGroundProperly(oSlot[i]["occasionid"])
             SetEntityInvincible(oSlot[i]["occasionid"],true)
-            SetEntityHeading(oSlot[i]["occasionid"], oSlot[i]["h"])
+            SetEntityHeading(oSlot[i]["occasionid"], oSlot[i]["w"])
             SetVehicleDoorsLocked(oSlot[i]["occasionid"], 3)
 
             SetVehicleNumberPlateText(oSlot[i]["occasionid"], vehicles[i].occasionid)
