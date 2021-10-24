@@ -1,5 +1,5 @@
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
-    local result = exports.oxmysql:fetchSync('SELECT * FROM occasion_vehicles', {})
+    local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles', {})
     if result[1] ~= nil then
         cb(result)
     else
@@ -10,7 +10,7 @@ end)
 QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", function(source, cb, citizenid)
     local src = source
 
-    exports.oxmysql:fetch('SELECT * FROM players WHERE citizenid = ?', {citizenid}, function(result)
+    exports.oxmysql:execute('SELECT * FROM players WHERE citizenid = ?', {citizenid}, function(result)
         if result[1] ~= nil then
             cb(result[1])
         else
@@ -23,7 +23,7 @@ RegisterServerEvent('qb-occasions:server:ReturnVehicle')
 AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:fetchSync('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
+    local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
         {vehicleData['plate'], vehicleData["oid"]})
     if result[1] ~= nil then
         if result[1].seller == Player.PlayerData.citizenid then
@@ -80,7 +80,7 @@ RegisterServerEvent('qb-occasions:server:buyVehicle')
 AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = exports.oxmysql:fetchSync('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
+    local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
         {vehicleData['plate'], vehicleData["oid"]})
     if result[1] ~= nil and next(result[1]) ~= nil then
         if Player.PlayerData.money.bank >= result[1].price then
@@ -105,7 +105,7 @@ AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
                 SellerData.Functions.AddMoney('bank', NewPrice)
             else
                 -- Add money for offline
-                local BuyerData = exports.oxmysql:fetchSync('SELECT * FROM players WHERE citizenid = ?',
+                local BuyerData = exports.oxmysql:executeSync('SELECT * FROM players WHERE citizenid = ?',
                     {SellerCitizenId})
                 if BuyerData[1] ~= nil then
                     local BuyerMoney = json.decode(BuyerData[1].money)
