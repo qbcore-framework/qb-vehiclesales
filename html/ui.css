@@ -1,20 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
-
 body {
     overflow: hidden;
+
+    /* Start the interface hidden */
+    display: none;
 }
 
 .container {
     overflow: hidden;
 }
 
+.centred {
+    /* Centering code found https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+.centred-h {
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+}
+
 #sell-contract {
-    position: absolute;
-    width: 165vh;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-    user-select: none;
+    max-width: 700px;
+    max-height: 70vh;
+    width: 35vw;
+    height: 75vh;
+
+    border-radius: 15px;
+    background-color: white;
+
+    padding: 10px;
+
 }
 
 #buy-contract {
@@ -26,28 +47,11 @@ body {
     user-select: none;
 }
 
-.vehicle-description {
-    position: absolute;
-    left: 66.5vh;
-    bottom: 48vh;
-    width: 45vh;
-    height: 2vh;
-    border: none;
-    outline: none;
-    background: none;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.1s ease-in-out;
-    overflow:hidden;
-    display:inline-block;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 #buy-vehicle-desc {
     position: absolute;
     left: 66.8vh;
     bottom: 48vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 13px;
     width: 45vh;
     overflow: hidden;
@@ -67,12 +71,11 @@ body {
 }
 
 #sell-vehicle {
-    position: absolute;
-    width: 10vh;
-    height: 3vh;
+    width: 60px;
+    height: 35px;
     background: rgb(141, 141, 141);
-    bottom: 22vh;
     margin: 0 auto;
+    margin-top: 5px;
     left: 0;
     right: 0;
     border-radius: 2px;
@@ -87,15 +90,19 @@ body {
     text-align: center;
     line-height: 2.9vh;
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 12px;
     font-weight: bold;
 }
 
+input.vehicle-sell-price::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white;
+    opacity: 1; /* Firefox */
+}
+
 #buy-vehicle {
-    position: absolute;
-    width: 10vh;
-    height: 3vh;
+    width: 60px;
+    height: 35px;
     background: rgb(141, 141, 141);
     bottom: 22vh;
     margin: 0 auto;
@@ -113,83 +120,150 @@ body {
     text-align: center;
     line-height: 2.9vh;
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 12px;
     font-weight: bold;
 }
 
-#seller-name {
-    position: absolute;
-    left: 66.8vh;
-    top: 21.5vh;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
+#form-header {
+    height: 160px;
+    border-bottom: solid;
+    border-color: black;
+    border-width: 2px;
+    padding-left: 20px;
+    margin-bottom: 30px;
+
+    display: flex;
+    flex-direction: row;
 }
 
-#seller-banknr {
-    position: absolute;
-    left: 66.8vh;
-    top: 28vh;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
+.v-centred-container {
+    /* Needed for child elements to align relative to form-header */
+    position: relative;
+
 }
 
-#seller-telnr {
+.vertical-center {
+    margin: 0;
     position: absolute;
-    left: 66.8vh;
-    top: 34.2vh;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+.logo {
+    width: 20%;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
 }
 
-#vehicle-plate {
-    position: absolute;
-    left: 66.8vh;
-    top: 40.5vh;
-    font-family: 'Poppins', sans-serif;
+#biz-name {
+    width: 65%;
+    text-align: center;
+    font-family: 'Poppins';
+    font-size: 1.3em;
+    font-weight: bold;
+
+}
+
+#the-form {
+    margin-top: 80px;
+
+    width: 80%;
+    height: 70%;
+
+}
+
+ul {
+    list-style-type: none;
+}
+
+.errors {
+    font-family: 'Poppins';
+    background-color: crimson;
+    width: 80%;
+    border-radius: 3px;
+    border-color: rgba(0, 0, 0, 0.555);
+    padding: 10px;
+    margin-top: 20px;
+
+}
+
+.form-entry {
+    /* margin-top: 20px; */
+    height: 13%;
+}
+
+.form-entry input {
+    width: 90%;
+    padding-left: 5px;
+}
+
+.form-field {
+    font-family: 'Poppins';
     font-size: 14px;
+    padding-bottom: 2px;
+    border-bottom: solid;
+    border-color: black;
+    border-width: 3px;
+}
+
+.form-field-summary {
+    font-weight: bold;
+}
+
+.vehicle-description {
+    /* left: 66.5vh;
+    bottom: 48vh;
+    width: 45vh;
+    height: 2vh; */
+
+    outline: none;
+    background: none;
+    font-family: 'Poppins';
+    transition: background-color 0.1s ease-in-out;
+    overflow:hidden;
+    display:inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .vehicle-sell-price {
     position: absolute;
-    left: 85.8vh;
-    bottom: 35.75vh;
-    font-family: 'Poppins', sans-serif;
     font-size: 12px;
     border: none;
     outline: none;
     background: none;
 }
 
-#tax {
-    position: absolute;
-    left: 90vh;
-    bottom: 33.5vh;
-    font-family: 'Poppins', sans-serif;
+table {
+    font-family: 'Poppins';
     font-size: 12px;
+    
+    border: solid;
+    border-color: black;
+    background: lightslategray;
 }
 
-#mosley-cut {
-    position: absolute;
-    left: 90vh;
-    bottom: 31.05vh;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
+.pricing-table {
+    margin-bottom: 15px;
+    width: 50%;
 }
 
-#total-money {
-    position: absolute;
-    left: 90vh;
-    bottom: 28.6vh;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
+.table-field-heading {
+    font-weight: 1000;
 }
+
+
+
 
 #buy-price {
     position: absolute;
     left: 87vh;
     bottom: 35.8vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 12px;
 }
 
@@ -197,7 +271,7 @@ body {
     position: absolute;
     left: 66.8vh;
     top: 21.5vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 14px;
 }
 
@@ -205,7 +279,7 @@ body {
     position: absolute;
     left: 66.8vh;
     top: 28vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 14px;
 }
 
@@ -213,7 +287,7 @@ body {
     position: absolute;
     left: 66.8vh;
     top: 34.2vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 14px;
 }
 
@@ -221,6 +295,5 @@ body {
     position: absolute;
     left: 66.8vh;
     top: 40.5vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
 }
-   
