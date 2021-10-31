@@ -18,7 +18,7 @@ local inRange
 local vehiclesSpawned = false
 local isConfirming = false
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         inRange = false
         local ped = PlayerPedId()
@@ -60,10 +60,16 @@ Citizen.CreateThread(function()
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                             if owned then
-                                TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
-                                QBCore.Functions.DeleteVehicle(GetVehiclePedIsIn(ped))
+                                TriggerServerEvent('qb-vehicleshop:server:checkifFinanced')
+                                Wait(1000)
+                                if financed then
+                                    QBCore.Functions.Notify({text = 'Warning', caption =  'You have to pay your car off before you can sale it'}, 'error')
+                                else
+                                    TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
+                                    QBCore.Functions.DeleteVehicle(GetVehiclePedIsIn(ped))
+                                end
                             else
-                                QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                QBCore.Functions.Notify({text = 'Warning', caption =  'This is not your vehicle..'}, 'error')
                             end
                         end, sellVehData.plate)
                     end
@@ -131,9 +137,15 @@ Citizen.CreateThread(function()
                             local VehiclePlate = GetVehicleNumberPlateText(GetVehiclePedIsIn(ped))
                             QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                                 if owned then
-                                    openSellContract(true)
+                                    TriggerServerEvent('qb-vehicleshop:server:checkifFinanced')
+                                    Wait(1000)
+                                    if financed then
+                                        QBCore.Functions.Notify({text = 'Warning', caption =  'You have to pay your car off before you can sale it'}, 'error')
+                                    else
+                                        openSellContract(true)
+                                    end
                                 else
-                                    QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                    QBCore.Functions.Notify({text = 'Warning', caption =  'This is not your vehicle..'}, 'error')
                                 end
                             end, VehiclePlate)
                         end
@@ -146,11 +158,11 @@ Citizen.CreateThread(function()
                     vehiclesSpawned = false
                     despawnOccasionsVehicles()
                 end
-                Citizen.Wait(1000)
+                Wait(1000)
             end
         end
 
-        Citizen.Wait(3)
+        Wait(3)
     end
 end)
 
