@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'QB-VehicleSales'
-version '1.0.0'
+version '1.1.0'
 
 ui_page 'html/ui.html'
 
@@ -16,9 +16,9 @@ server_script 'server/main.lua'
 
 files {
 	'html/reset.css',
-	'html/new-sell-contract.png',
-	'html/new-buy-contract.png',
+	'html/logo.svg',
 	'html/ui.css',
 	'html/ui.html',
+	'html/vue.min.js',
 	'html/ui.js',
 }

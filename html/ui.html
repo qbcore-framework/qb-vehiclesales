@@ -4,47 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>  
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" ></script>
     <link rel="stylesheet" href="./ui.css">
-    <link rel="stylesheet" href="./reset.css">
     <title>QB Occasions</title>
 </head>
     <body>
-        <div class="sell-container">
-            <img id="sell-contract" src="./new-sell-contract.png" alt="sell-contract">
-            <div class="sell-contract">
-                <span id="seller-name"></span>
-                <span id="seller-banknr"></span>
-                <span id="seller-telnr"></span>
-                <span id="vehicle-plate"></span>
+        <div class="sell-container" id="app">
+            <div id="sell-contract" class="centred">
+                <div id="form-header" class="v-centred-container">
+                    <object type="image/svg+xml" data="logo.svg" class="logo">
+                        Shop Logo <!-- fallback image in CSS -->
+                    </object>
+                    <div>
+                        <div id="biz-name" class="vertical-center">{{ bizName }}</div>
+                    </div>
+                </div>
 
-                <input type="text" class="vehicle-sell-price" placeholder="Vehicle Price" oninput="validity.valid||(value=''); calculatePrice();">
-                <span id="tax"> &dollar; 0</span>
-                <span id="mosley-cut"> &dollar; 0</span>
-                <span id="total-money"> &dollar; 0</span>
+                <div id="the-form" class="centred">
+                    <div class="form-entry">
+                        <div id="seller-name" class="form-field" >{{ sellerName }}</div>
+                        <span class="form-field-summary">(Name of Seller)</span>
+                    </div>
+                    <div class="form-entry">
+                        <div id="seller-banknr" class="form-field">{{ bankAccount }}</div>
+                        <span class="form-field-summary">(Bank Account Number)</span>
+                    </div>
+                    <div class="form-entry">
+                        <div id="seller-telnr" class="form-field">{{ phoneNumber }}</div>
+                        <span class="form-field-summary">(Telephone Number)</span>
+                    </div>
+                    <div class="form-entry">
+                        <div id="vehicle-plate" class="form-field">{{ licensePlate }}</div>
+                        <span class="form-field-summary">(Vehicle License Plate)</span>
+                    </div>
+                    <div class="form-entry">
+                        <div class="form-field" v-if="mode==='sellVehicle'">
+                            <input type="text" 
+                                class="vehicle-description" 
+                                maxlength="500" 
+                                placeholder="Enter Your Vehicle Description Here, Maximum 500 Characters"
+                                v-model="vehicleDescription">
+                        </div>
+                        <span class="form-field-summary"v-if="mode==='sellVehicle'">(Vehicle Description. max 500)</span>
+                        <div id="vehicle-plate" class="form-field" v-if="mode==='buyVehicle'">{{ vehicleDescription }}</div>
+                    </div>
+                    
+                    <div class="form-entry" v-if="mode==='sellVehicle'">
+                        <table class="pricing-table centred-h">
+                            <tr><td><span class="table-field-heading">Selling Price:</span> 
+                                <input type="text" 
+                                    class="vehicle-sell-price"
+                                    placeholder="Enter Vehicle Price Here"
+                                    v-model="sellPrice">
+                            </td></tr>
+                            <tr><td><span class="table-field-heading">Tax:</span><span id="tax"> &dollar; {{ tax }}</span></td></tr>
+                            <tr><td><span class="table-field-heading">Mosely's Cut:</span><span id="mosley-cut"> &dollar; {{ mosleys }}</span></td></tr>
+                            <tr><td><span class="table-field-heading">Total Yield:</span><span id="total-money"> &dollar; {{ total }}</span></td></tr>
+                        </table>
+                    </div>
 
-                <input type="text" class="vehicle-description" maxlength="500" placeholder="Enter Your Vehicle Description Here, Maximum 500 Characters">
+                    <div class="form-entry" v-if="mode==='buyVehicle'">
+                        <table class="pricing-table centred-h">
+                            <tr><td><span class="table-field-heading">Vehicle Price:</span><span id="tax"> &dollar; {{ sellPrice }}</span></td></tr>
+                        </table>
+                    </div>
+                    
+                    <div class="btn" id="sell-vehicle" v-if="mode==='sellVehicle'" @click="sell(sellPrice)"><p>Sell</p></div>
+                    <div class="btn" id="buy-vehicle" v-if="mode==='buyVehicle'" @click="buy()"><p>Buy</p></div>
 
-                <div class="btn" id="sell-vehicle"><p>Sell</p></div>
+                    <div v-if="errors.length" class="errors centred-h">
+                        <ul>
+                            <li v-for="error in errors">{{ error }}</li>
+                        </ul>
+                    </div>
+                </div>
+                
             </div>
+
         </div>
-
-        <div class="buy-container">
-            <img id="buy-contract" src="./new-buy-contract.png" alt="buy-contract">
-            <div class="buy-contract">
-                <span id="buy-seller-name"></span>
-                <span id="buy-seller-banknr"></span>
-                <span id="buy-seller-telnr"></span>
-                <span id="buy-vehicle-plate"></span>
-
-                <span id="buy-vehicle-desc"></span>
-
-                <span id="buy-price"></span>
-
-                <div class="btn" id="buy-vehicle"><p>Buy</p></div>
-            </div>
-        </div>
+        
+        <script src="./vue.min.js"></script>
         <script src="./ui.js"></script>
     </body>
 </html>

@@ -26,7 +26,7 @@ Citizen.CreateThread(function()
         local price = nil
         if QBCore ~= nil then
             for _,slot in pairs(Config.OccasionSlots) do
-                local dist = #(pos - vector3(slot["x"], slot["y"], slot["z"]))
+                local dist = #(pos - slot.loc)
 
                 if dist <= 40 then
                     inRange = true
@@ -60,8 +60,7 @@ Citizen.CreateThread(function()
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                             if owned then
-                                TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
-                                QBCore.Functions.DeleteVehicle(GetVehiclePedIsIn(ped))
+                                SellToDealer(sellVehData, GetVehiclePedIsIn(ped))                   
                             else
                                 QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                             end
@@ -154,6 +153,36 @@ Citizen.CreateThread(function()
     end
 end)
 
+function SellToDealer(sellVehData, vehicleHash)
+    -- Thread to handle confirmation question. Will only run until a decision
+    -- is made of the distance to the checkpoint is too far
+    Citizen.CreateThread(function()
+        local keepGoing = true
+        while keepGoing do
+            local coords = GetEntityCoords(vehicleHash)
+            DrawText3Ds(coords.x, coords.y, coords.z + 1.6, '~g~7~w~ - Confirm / ~r~8~w~ - Cancel ~g~') -- (coords, text, size, font)
+                            
+            if IsDisabledControlJustPressed(0, 161) then
+                TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
+                QBCore.Functions.DeleteVehicle(vehicleHash)
+
+                keepGoing = false
+            end
+
+            if IsDisabledControlJustPressed(0, 162) then
+                keepGoing = false
+            end
+
+            if #(Config.SellVehicleBack - coords) > 3 then
+                keepGoing = false
+            end
+
+            Citizen.Wait(0)
+        end
+
+    end)
+end
+
 function spawnOccasionsVehicles(vehicles)
     local oSlot = Config.OccasionSlots
 
@@ -165,7 +194,7 @@ function spawnOccasionsVehicles(vehicles)
                 Citizen.Wait(0)
             end
             
-            oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i]["x"], oSlot[i]["y"], oSlot[i]["z"], false, false)
+            oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i].loc.x, oSlot[i].loc.y, oSlot[i].loc.z, false, false)
 
             oSlot[i]["price"] = vehicles[i].price
             oSlot[i]["owner"] = vehicles[i].seller
@@ -180,7 +209,7 @@ function spawnOccasionsVehicles(vehicles)
             SetModelAsNoLongerNeeded(model)
             SetVehicleOnGroundProperly(oSlot[i]["occasionid"])
             SetEntityInvincible(oSlot[i]["occasionid"],true)
-            SetEntityHeading(oSlot[i]["occasionid"], oSlot[i]["h"])
+            SetEntityHeading(oSlot[i]["occasionid"], oSlot[i].h)
             SetVehicleDoorsLocked(oSlot[i]["occasionid"], 3)
 
             SetVehicleNumberPlateText(oSlot[i]["occasionid"], vehicles[i].occasionid)
@@ -192,7 +221,8 @@ end
 function despawnOccasionsVehicles()
     local oSlot = Config.OccasionSlots
     for i = 1, #Config.OccasionSlots, 1 do
-        local oldVehicle = GetClosestVehicle(Config.OccasionSlots[i]["x"], Config.OccasionSlots[i]["y"], Config.OccasionSlots[i]["z"], 1.3, 0, 70)
+        local loc = Config.OccasionSlots[i].loc
+        local oldVehicle = GetClosestVehicle(loc.x, loc.y, loc.z, 1.3, 0, 70)
         if oldVehicle ~= 0 then
             QBCore.Functions.DeleteVehicle(oldVehicle)
         end
@@ -200,10 +230,18 @@ function despawnOccasionsVehicles()
 end
 
 function openSellContract(bool)
+    local pData = QBCore.Functions.GetPlayerData()
+
     SetNuiFocus(bool, bool)
     SendNUIMessage({
         action = "sellVehicle",
-        pData = QBCore.Functions.GetPlayerData(),
+        bizName = Config.BusinessName,
+        sellerData = {
+            firstname = pData.charinfo.firstname,
+            lastname = pData.charinfo.lastname,
+            account = pData.charinfo.account,
+            phone = pData.charinfo.phone
+        },
         plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId()))
     })
 end
@@ -212,22 +250,30 @@ function openBuyContract(sellerData, vehicleData)
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = "buyVehicle",
-        sellerData = sellerData,
-        vehicleData = vehicleData
+        bizName = Config.BusinessName,
+        sellerData = {
+            firstname = sellerData.charinfo.firstname,
+            lastname = sellerData.charinfo.lastname,
+            account = sellerData.charinfo.account,
+            phone = sellerData.charinfo.phone
+        },
+        vehicleData = {
+            desc = vehicleData.desc,
+            price = vehicleData.price
+        },
+        plate = vehicleData.plate
     })
 end
 
-RegisterNUICallback('close', function()
+RegisterNUICallback('close', function(data, cb)
     SetNuiFocus(false, false)
+    cb('ok')
 end)
 
-RegisterNUICallback('error', function(data)
-    QBCore.Functions.Notify(data.message, 'error')
-end)
-
-RegisterNUICallback('buyVehicle', function()
+RegisterNUICallback('buyVehicle', function(data, cb)
     local vehData = Config.OccasionSlots[currentVehicle]
     TriggerServerEvent('qb-occasions:server:buyVehicle', vehData)
+    cb('ok')
 end)
 
 DoScreenFadeIn(250)
@@ -275,9 +321,10 @@ AddEventHandler('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
     currentVehicle = nil
 end)
 
-RegisterNUICallback('sellVehicle', function(data)
+RegisterNUICallback('sellVehicle', function(data, cb)
     local plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId())) --Getting the plate and sending to the function
     SellData(data,plate)
+    cb('ok')
 end)
 
 function SellData(data,model)
@@ -318,7 +365,7 @@ AddEventHandler('qb-occasion:client:refreshVehicles', function()
 end)
 
 Citizen.CreateThread(function()
-    OccasionBlip = AddBlipForCoord(Config.SellVehicle["x"], Config.SellVehicle["y"], Config.SellVehicle["z"])
+    OccasionBlip = AddBlipForCoord(Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z)
 
     SetBlipSprite (OccasionBlip, 326)
     SetBlipDisplay(OccasionBlip, 4)

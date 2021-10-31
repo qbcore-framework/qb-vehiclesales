@@ -1,82 +1,123 @@
-QBOccasions = {}
+var app = new Vue({
+    el: "#app",
+    data: {
+        mode: "",
+        bizName: "",
+        sellerName: "",
+        bankAccount: "",
+        phoneNumber: "",
+        licensePlate: "",
+        vehicleDescription: "",
+        sellPrice: "",
+        errors: []
+    },
+    methods: {
+        sell(sellPrice) {
+            this.errors = [];
+            if (this.sellPrice != "") {
+                if (!isNaN(sellPrice)) {
+                    const requestOptions = {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            price: this.sellPrice,
+                            desc: this.vehicleDescription
+                        })                        
+                    };
+                    fetch("https://qb-vehiclesales/sellVehicle", requestOptions);
+                    this.close();
+                } else {
+                    this.errors.push("Price must be a numeric value only");
+                }
+            } else {
+                this.errors.push("Sale price required")
+            }
+        },
+        buy() {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            fetch("https://qb-vehiclesales/buyVehicle", requestOptions);
+            this.close();
+        },
+        close() {            
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            fetch("https://qb-vehiclesales/close", requestOptions);
+            // .then(function(msg) {
+            //     console.log(msg);
 
-$(document).ready(function(){
-    $('.sell-container').hide();
-    $('.buy-container').hide();
+            // });
 
-    window.addEventListener('message', function(event){
-        var eventData = event.data;
-
-        if (eventData.action == "sellVehicle") {
-            $('.sell-container').fadeIn(150);
-            QBOccasions.setupSellContract(eventData)
+            this.resetForm();
+            this.hideForm();
+            
+        },
+        resetForm() {
+            this.sellerName = "";
+            this.bankAccount = "";
+            this.phoneNumber = "";
+            this.licensePlate = "";
+            this.vehicleDescription = "";
+            this.sellPrice = "";
+            this.errors = [];
+        },
+        hideForm() {
+            document.body.style.display = "none";
         }
-
-        if (eventData.action == "buyVehicle") {
-            $('.buy-container').fadeIn(150);
-            QBOccasions.setupBuyContract(eventData, eventData.vehicleData)
-        }
-    });
-});
-
-$(document).on('keydown', function() {
-    switch(event.keyCode) {
-        case 27:
-            $('.sell-container').fadeOut(100);
-            $('.buy-container').fadeOut(100);
-            $.post('https://qb-vehiclesales/close');
-            break;
-    }
-});
-
-$(document).on('click', '#sell-vehicle', function(){
-    if ($('.vehicle-sell-price').val() != "") {
-        if (!isNaN($('.vehicle-sell-price').val())) {
-            $.post('https://qb-vehiclesales/sellVehicle', JSON.stringify({
-                price: $('.vehicle-sell-price').val(),
-                desc: $('.vehicle-description').val()
-            }));
         
-            $('.sell-container').fadeOut(100);
-            $.post('https://qb-vehiclesales/close');
-        } else {
-            $.post('https://qb-vehiclesales/error', JSON.stringify({
-                message: "Amount must be numbers.."
-            }))
+    },
+    computed: {
+        tax() {
+            return (this.sellPrice / 100 * 19).toFixed(0);
+        },
+        mosleys() {
+            return (this.sellPrice / 100 * 4).toFixed(0);
+        },
+        total() {
+            return (this.sellPrice / 100 * 77).toFixed(0);
         }
-    } else {
-        $.post('https://qb-vehiclesales/error', JSON.stringify({
-            message: "Enter an amount.."
-        }))
     }
+
 });
 
-$(document).on('click', '#buy-vehicle', function(){
-    $.post('https://qb-vehiclesales/buyVehicle');
-    $('.buy-container').fadeOut(100);
-    $.post('https://qb-vehiclesales/close');
-});
+function setupForm(data) {
+    if(data.action === "sellVehicle" || data.action === "buyVehicle") {
+        document.body.style.display = "block";
+    }
 
-QBOccasions.setupSellContract = function(data) {
-    $("#seller-name").html(data.pData.charinfo.firstname + " " + data.pData.charinfo.lastname);
-    $("#seller-banknr").html(data.pData.charinfo.account);
-    $("#seller-telnr").html(data.pData.charinfo.phone);
-    $("#vehicle-plate").html(data.plate);
+    app.mode = data.action;
+
+    app.bizName = data.bizName;
+
+    app.sellerName = data.sellerData.firstname + " " + data.sellerData.lastname;
+    app.bankAccount = data.sellerData.account;
+    app.phoneNumber = data.sellerData.phone;
+    app.licensePlate = data.plate;
+
+    if(data.action === "buyVehicle") {
+        app.vehicleDescription = data.vehicleData.desc;
+        app.sellPrice = data.vehicleData.price;
+    }
 }
 
-QBOccasions.setupBuyContract = function(data, vData) {
-    $("#buy-seller-name").html(data.sellerData.charinfo.firstname + " " + data.sellerData.charinfo.lastname);
-    $("#buy-seller-banknr").html(data.sellerData.charinfo.account);
-    $("#buy-seller-telnr").html(data.sellerData.charinfo.phone);
-    $("#buy-vehicle-plate").html(vData.plate);
-    $("#buy-vehicle-desc").html(vData.desc);
-    $("#buy-price").html("&dollar;" + vData.price);
-}
+document.onreadystatechange = () => {
+    if (document.readyState === "complete") {
+        window.addEventListener("message", (event) => {
+            this.setupForm(event.data);
+        });
+    }
+};
 
-function calculatePrice() {
-    var priceVal = $('.vehicle-sell-price').val();
-    
-    $('#tax').html("&dollar; " + (priceVal / 100 * 19).toFixed(0));
-    $('#mosley-cut').html("&dollar; " + (priceVal / 100 * 4).toFixed(0));
-    $('#total-money').html("&dollar; " + (priceVal / 100 * 77).toFixed(0));
-}
+/* Handle escape key press to close the menu */
+document.onkeyup = function (data) {
+    if (data.which == 27) {
+        app.close();
+        
+    }
+};
