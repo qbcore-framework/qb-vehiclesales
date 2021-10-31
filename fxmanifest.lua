@@ -1,7 +1,6 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'Original author unknown. Changes by Harry The Bastard'
 description 'QB-VehicleSales'
 version '1.1.0'
 
