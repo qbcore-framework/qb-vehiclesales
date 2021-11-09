@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
     local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles', {})
     if result[1] ~= nil then
