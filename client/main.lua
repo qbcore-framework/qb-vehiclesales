@@ -43,13 +43,13 @@ Citizen.CreateThread(function()
             end
 
             local sellBackDist = #(pos - Config.SellVehicleBack)
-            
-            if sellBackDist <= 13.0 and IsPedInAnyVehicle(ped) then 
+
+            if sellBackDist <= 13.0 and IsPedInAnyVehicle(ped) then
                 DrawMarker(2, Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
                 if sellBackDist <= 3.5 and IsPedInAnyVehicle(ped) then
-                    local price 
+                    local price
                     local sellVehData = {}
-                    sellVehData.plate = GetVehicleNumberPlateText(GetVehiclePedIsIn(ped))
+                    sellVehData.plate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(ped))
                     sellVehData.model = GetEntityModel(GetVehiclePedIsIn(ped))
                         for k, v in pairs(QBCore.Shared.Vehicles) do
                             if tonumber(v["hash"]) == sellVehData.model then
@@ -60,7 +60,7 @@ Citizen.CreateThread(function()
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                             if owned then
-                                SellToDealer(sellVehData, GetVehiclePedIsIn(ped))                   
+                                SellToDealer(sellVehData, GetVehiclePedIsIn(ped))
                             else
                                 QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                             end
@@ -68,7 +68,7 @@ Citizen.CreateThread(function()
                     end
                 end
             end
-            
+
             if inRange then
                 for i = 1, #Config.OccasionSlots, 1 do
                     local vehPos = GetEntityCoords(Config.OccasionSlots[i]["occasionid"])
@@ -87,9 +87,9 @@ Citizen.CreateThread(function()
                                 end
                                 if IsControlJustPressed(0, 38) then
                                     currentVehicle = i
-                                    
+
                                     QBCore.Functions.TriggerCallback('qb-occasions:server:getSellerInformation', function(info)
-                                        if info ~= nil then 
+                                        if info ~= nil then
                                             info.charinfo = json.decode(info.charinfo)
                                         else
                                             info = {}
@@ -100,7 +100,7 @@ Citizen.CreateThread(function()
                                                 phone = "telephone number not known.."
                                             }
                                         end
-                                        
+
                                         openBuyContract(info, Config.OccasionSlots[currentVehicle])
                                     end, Config.OccasionSlots[currentVehicle]["owner"])
                                 end
@@ -122,12 +122,12 @@ Citizen.CreateThread(function()
 
                 local sellDist = #(pos - Config.SellVehicle)
 
-                if sellDist <= 13.0 and IsPedInAnyVehicle(ped) then 
+                if sellDist <= 13.0 and IsPedInAnyVehicle(ped) then
                     DrawMarker(2, Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
                     if sellDist <= 3.5 and IsPedInAnyVehicle(ped) then
                         DrawText3Ds(Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z, '[~g~E~w~] - Place Vehicle For Sale By Owner')
                         if IsControlJustPressed(0, 38) then
-                            local VehiclePlate = GetVehicleNumberPlateText(GetVehiclePedIsIn(ped))
+                            local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(ped))
                             QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
                                 if owned then
                                     openSellContract(true)
@@ -161,7 +161,7 @@ function SellToDealer(sellVehData, vehicleHash)
         while keepGoing do
             local coords = GetEntityCoords(vehicleHash)
             DrawText3Ds(coords.x, coords.y, coords.z + 1.6, '~g~7~w~ - Confirm / ~r~8~w~ - Cancel ~g~') -- (coords, text, size, font)
-                            
+
             if IsDisabledControlJustPressed(0, 161) then
                 TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
                 QBCore.Functions.DeleteVehicle(vehicleHash)
@@ -193,7 +193,7 @@ function spawnOccasionsVehicles(vehicles)
             while not HasModelLoaded(model) do
                 Citizen.Wait(0)
             end
-            
+
             oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i].loc.x, oSlot[i].loc.y, oSlot[i].loc.z, false, false)
 
             oSlot[i]["price"] = vehicles[i].price
@@ -242,7 +242,7 @@ function openSellContract(bool)
             account = pData.charinfo.account,
             phone = pData.charinfo.phone
         },
-        plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId()))
+        plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId()))
     })
 end
 
@@ -322,17 +322,17 @@ AddEventHandler('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
 end)
 
 RegisterNUICallback('sellVehicle', function(data, cb)
-    local plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId())) --Getting the plate and sending to the function
+    local plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId())) --Getting the plate and sending to the function
     SellData(data,plate)
     cb('ok')
 end)
 
 function SellData(data,model)
-    QBCore.Functions.TriggerCallback("qb-vehiclesales:server:CheckModelName",function(DataReturning) 
+    QBCore.Functions.TriggerCallback("qb-vehiclesales:server:CheckModelName",function(DataReturning)
         local vehicleData = {}
         local PlayerData = QBCore.Functions.GetPlayerData()
         vehicleData.ent = GetVehiclePedIsUsing(PlayerPedId())
-        vehicleData.model = DataReturning 
+        vehicleData.model = DataReturning
         vehicleData.plate = model
         vehicleData.mods = QBCore.Functions.GetVehicleProperties(vehicleData.ent)
         vehicleData.desc = data.desc
