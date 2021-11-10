@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
     local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles', {})
     if result[1] ~= nil then
@@ -19,8 +21,7 @@ QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", func
     end)
 end)
 
-RegisterServerEvent('qb-occasions:server:ReturnVehicle')
-AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
+RegisterNetEvent('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
@@ -43,8 +44,7 @@ AddEventHandler('qb-occasions:server:ReturnVehicle', function(vehicleData)
     end
 end)
 
-RegisterServerEvent('qb-occasions:server:sellVehicle')
-AddEventHandler('qb-occasions:server:sellVehicle', function(vehiclePrice, vehicleData)
+RegisterNetEvent('qb-occasions:server:sellVehicle', function(vehiclePrice, vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     exports.oxmysql:execute('DELETE FROM player_vehicles WHERE plate = ? AND vehicle = ?',
@@ -63,8 +63,7 @@ AddEventHandler('qb-occasions:server:sellVehicle', function(vehiclePrice, vehicl
     TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
 end)
 
-RegisterServerEvent('qb-occasions:server:sellVehicleBack')
-AddEventHandler('qb-occasions:server:sellVehicleBack', function(vData)
+RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local cid = Player.PlayerData.citizenid
@@ -76,8 +75,7 @@ AddEventHandler('qb-occasions:server:sellVehicleBack', function(vData)
     exports.oxmysql:execute('DELETE FROM player_vehicles WHERE plate = ?', {plate})
 end)
 
-RegisterServerEvent('qb-occasions:server:buyVehicle')
-AddEventHandler('qb-occasions:server:buyVehicle', function(vehicleData)
+RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local result = exports.oxmysql:executeSync('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
