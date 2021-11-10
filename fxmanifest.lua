@@ -2,11 +2,11 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'QB-VehicleSales'
-version '1.1.0'
+version '1.0.0'
 
 ui_page 'html/ui.html'
 
-shared_scripts { 
+shared_scripts {
 	'config.lua'
 }
 
@@ -21,3 +21,5 @@ files {
 	'html/vue.min.js',
 	'html/ui.js',
 }
+
+lua54 'yes'
