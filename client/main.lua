@@ -279,11 +279,15 @@ CreateThread(function()
                         end
                     DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, '[~g~E~w~] - Sell Vehicle To Dealer For ~g~$'..math.floor(sellVehData.price / 2))
                     if IsControlJustPressed(0, 38) then
-                        QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
-                            if owned then
-                                SellToDealer(sellVehData, GetVehiclePedIsIn(ped))
+                        QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
+                            if balance < 1 then
+                                if owned then
+                                    openSellContract(true)
+                                else
+                                    QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                end
                             else
-                                QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                QBCore.Functions.Notify('You still owe money on this car..', 'error', 3500)
                             end
                         end, sellVehData.plate)
                     end
@@ -349,11 +353,15 @@ CreateThread(function()
                         DrawText3Ds(Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z, '[~g~E~w~] - Place Vehicle For Sale By Owner')
                         if IsControlJustPressed(0, 38) then
                             local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(ped))
-                            QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned)
-                                if owned then
-                                    openSellContract(true)
+                            QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
+                                if balance < 1 then
+                                    if owned then
+                                        openSellContract(true)
+                                    else
+                                        QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                    end
                                 else
-                                    QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                    QBCore.Functions.Notify('You still owe money on this car..', 'error', 3500)
                                 end
                             end, VehiclePlate)
                         end
