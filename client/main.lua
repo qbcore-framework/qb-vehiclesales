@@ -282,7 +282,7 @@ CreateThread(function()
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
                             if balance < 1 then
                                 if owned then
-                                    openSellContract(true)
+                                    SellToDealer(sellVehData, GetVehiclePedIsIn(ped))
                                 else
                                     QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                                 end
