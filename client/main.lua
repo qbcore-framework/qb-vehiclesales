@@ -287,7 +287,7 @@ CreateThread(function()
                                     QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                                 end
                             else
-                                QBCore.Functions.Notify('You still owe money on this car..', 'error', 3500)
+                                QBCore.Functions.Notify('You must finish paying off this vehilce, Before you can sell it..', 'error', 3500)
                             end
                         end, sellVehData.plate)
                     end
@@ -361,7 +361,7 @@ CreateThread(function()
                                         QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                                     end
                                 else
-                                    QBCore.Functions.Notify('You still owe money on this car..', 'error', 3500)
+                                    QBCore.Functions.Notify('You must finish paying off this vehilce, Before you can sell it..', 'error', 3500)
                                 end
                             end, VehiclePlate)
                         end
