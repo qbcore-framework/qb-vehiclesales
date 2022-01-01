@@ -107,6 +107,8 @@ local function SellToDealer(sellVehData, vehicleHash)
     CreateThread(function()
         local keepGoing = true
         while keepGoing do
+            DisableControlAction(0, 38, true)
+            
             local coords = GetEntityCoords(vehicleHash)
             DrawText3Ds(coords.x, coords.y, coords.z + 1.6, '~g~7~w~ - Confirm / ~r~8~w~ - Cancel ~g~')
 
