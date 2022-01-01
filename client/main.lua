@@ -280,14 +280,14 @@ CreateThread(function()
                     DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, '[~g~E~w~] - Sell Vehicle To Dealer For ~g~$'..math.floor(sellVehData.price / 2))
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
-                            if balance < 1 then
-                                if owned then
+                            if owned then
+                                if balance < 1 then
                                     SellToDealer(sellVehData, GetVehiclePedIsIn(ped))
                                 else
-                                    QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                    QBCore.Functions.Notify('You must finish paying off this vehicle, Before you can sell it..', 'error', 3500)
                                 end
                             else
-                                QBCore.Functions.Notify('You must finish paying off this vehilce, Before you can sell it..', 'error', 3500)
+                                QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                             end
                         end, sellVehData.plate)
                     end
@@ -354,14 +354,20 @@ CreateThread(function()
                         if IsControlJustPressed(0, 38) then
                             local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(ped))
                             QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
-                                if balance < 1 then
-                                    if owned then
-                                        openSellContract(true)
+                                if owned then
+                                    if balance < 1 then 
+                                        QBCore.Functions.TriggerCallback('qb-occasions:server:getVehicles', function(vehicles)
+                                            if vehicles == nil or #vehicles < #Config.OccasionSlots then
+                                                openSellContract(true)
+                                            else
+                                                QBCore.Functions.Notify('There is not space for your car on the lot!', 'error', 3500)
+                                            end
+                                    end)
                                     else
-                                        QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                        QBCore.Functions.Notify('You must finish paying off this vehicle, Before you can sell it..', 'error', 3500)
                                     end
                                 else
-                                    QBCore.Functions.Notify('You must finish paying off this vehilce, Before you can sell it..', 'error', 3500)
+                                    QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
                                 end
                             end, VehiclePlate)
                         end
