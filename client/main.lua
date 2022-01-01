@@ -108,18 +108,18 @@ local function SellToDealer(sellVehData, vehicleHash)
         local keepGoing = true
         while keepGoing do
             DisableControlAction(0, 38, true)
-            
-            local coords = GetEntityCoords(vehicleHash)
-            DrawText3Ds(coords.x, coords.y, coords.z + 1.6, '~g~7~w~ - Confirm / ~r~8~w~ - Cancel ~g~')
 
-            if IsDisabledControlJustPressed(0, 161) then
+            local coords = GetEntityCoords(vehicleHash)
+            DrawText3Ds(coords.x, coords.y, coords.z + 1.6, '~g~Y~w~ - Confirm / ~r~N~w~ - Cancel ~g~')
+
+            if IsDisabledControlJustPressed(0, 246) then
                 TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
                 QBCore.Functions.DeleteVehicle(vehicleHash)
 
                 keepGoing = false
             end
 
-            if IsDisabledControlJustPressed(0, 162) then
+            if IsDisabledControlJustPressed(0, 306) then
                 keepGoing = false
             end
 
