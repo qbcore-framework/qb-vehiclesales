@@ -139,7 +139,7 @@ local function sellVehicleWait(price)
     QBCore.Functions.DeleteVehicle(GetVehiclePedIsIn(PlayerPedId()))
     Wait(1500)
     DoScreenFadeIn(250)
-    QBCore.Functions.Notify(Lang:t('success.car_up_for_sale', price), 'success')
+    QBCore.Functions.Notify(Lang:t('success.car_up_for_sale', { value = price }), 'success')
     PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
 end
 
@@ -279,7 +279,7 @@ CreateThread(function()
                                 sellVehData.price = tonumber(v["price"])
                             end
                         end
-                    DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, Lang:t('info.sell_vehicle_to_dealer', math.floor(sellVehData.price / 2)))
+                    DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, Lang:t('info.sell_vehicle_to_dealer', { value = math.floor(sellVehData.price / 2) }))
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
                             if owned then
@@ -305,7 +305,7 @@ CreateThread(function()
                         if not IsPedInAnyVehicle(ped) then
                             if not isConfirming then
                                 DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, Lang:t('info.view_contract'))
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, Lang:t('info.model_price', QBCore.Shared.Vehicles[Config.OccasionSlots[i]["model"]]["name"], Config.OccasionSlots[i]["price"]))
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, Lang:t('info.model_price', { value = QBCore.Shared.Vehicles[Config.OccasionSlots[i]["model"]]["name"], value2 = Config.OccasionSlots[i]["price"] }))
                                 if Config.OccasionSlots[i]["owner"] == QBCore.Functions.GetPlayerData().citizenid then
                                     DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.05, Lang:t('info.cancel_sale'))
                                     if IsControlJustPressed(0, 47) then
