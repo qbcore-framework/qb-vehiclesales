@@ -62,10 +62,10 @@ RegisterNetEvent('qb-occasions:server:ReturnVehicle', function(vehicleData)
             TriggerClientEvent("qb-occasions:client:ReturnOwnedVehicle", src, result[1])
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
         else
-            TriggerClientEvent('QBCore:Notify', src, 'This is not your vehicle', 'error', 3500)
+            TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_your_vehicle'), 'error', 3500)
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 'Vehicle does not exist', 'error', 3500)
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.vehicle_does_not_exist'), 'error', 3500)
     end
 end)
 
@@ -84,7 +84,7 @@ RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vData)
     local price = math.floor(vData.price / 2)
     local plate = vData.plate
     Player.Functions.AddMoney('bank', price)
-    TriggerClientEvent('QBCore:Notify', src, 'You have sold your car for $' .. price, 'success', 5500)
+    TriggerClientEvent('QBCore:Notify', src, Lang:t('error.vehicle_does_not_exist', price), 'success', 5500)
     MySQL.Async.execute('DELETE FROM player_vehicles WHERE plate = ?', {plate})
 end)
 
@@ -122,12 +122,12 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
             MySQL.Async.execute('DELETE FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',{result[1].plate, result[1].occasionid})
             TriggerEvent('qb-phone:server:sendNewMailToOffline', SellerCitizenId, {
-                sender = 'Larrys RV Sales',
-                subject = "You have sold a vehicle!",
-                message = 'You made $'..NewPrice..' from the sale of your '..QBCore.Shared.Vehicles[result[1].model].name..''
+                sender = Lang:t('mail.sender'),
+                subject = Lang:t('mail.subject'),
+                message = Lang:t('mail.message', NewPrice, QBCore.Shared.Vehicles[result[1].model].name)
             })
         else
-            TriggerClientEvent('QBCore:Notify', src, 'You dont have enough money', 'error', 3500)
+            TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_enough_money'), 'error', 3500)
         end
     end
 end)
