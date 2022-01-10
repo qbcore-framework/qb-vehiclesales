@@ -110,7 +110,7 @@ local function SellToDealer(sellVehData, vehicleHash)
             DisableControlAction(0, 38, true)
 
             local coords = GetEntityCoords(vehicleHash)
-            DrawText3Ds(coords.x, coords.y, coords.z + 1.6, '~g~Y~w~ - Confirm / ~r~N~w~ - Cancel ~g~')
+            DrawText3Ds(coords.x, coords.y, coords.z + 1.6, Lang:t('info.confirm_cancel'))
 
             if IsDisabledControlJustPressed(0, 246) then
                 TriggerServerEvent('qb-occasions:server:sellVehicleBack', sellVehData)
@@ -139,7 +139,7 @@ local function sellVehicleWait(price)
     QBCore.Functions.DeleteVehicle(GetVehiclePedIsIn(PlayerPedId()))
     Wait(1500)
     DoScreenFadeIn(250)
-    QBCore.Functions.Notify('Your car has been put up for sale! Price - $'..price, 'success')
+    QBCore.Functions.Notify(Lang:t('success.car_up_for_sale', { value = price }), 'success')
     PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
 end
 
@@ -187,7 +187,7 @@ RegisterNetEvent('qb-occasions:client:BuyFinished', function(vehdata)
         SetEntityHeading(veh, Config.BuyVehicle.w)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
         SetVehicleFuelLevel(veh, 100)
-        QBCore.Functions.Notify("Vehicle Bought", "success", 2500)
+        QBCore.Functions.Notify(Lang:t('success.vehicle_bought'), "success", 2500)
         TriggerEvent("vehiclekeys:client:SetOwner", vehdata.plate)
         SetVehicleEngineOn(veh, true, true)
         Wait(500)
@@ -207,7 +207,7 @@ RegisterNetEvent('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
         SetEntityHeading(veh, Config.BuyVehicle.w)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
         SetVehicleFuelLevel(veh, 100)
-        QBCore.Functions.Notify("You vehicle is returned")
+        QBCore.Functions.Notify(Lang:t('info.vehicle_returned'))
         TriggerEvent("vehiclekeys:client:SetOwner", vehdata.plate)
         SetVehicleEngineOn(veh, true, true)
         Wait(500)
@@ -238,7 +238,7 @@ CreateThread(function()
     SetBlipAsShortRange(OccasionBlip, true)
     SetBlipColour(OccasionBlip, 3)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentSubstringPlayerName("Used Vehicle Lot")
+    AddTextComponentSubstringPlayerName(Lang:t('info.used_vehicle_lot'))
     EndTextCommandSetBlipName(OccasionBlip)
 end)
 
@@ -279,17 +279,17 @@ CreateThread(function()
                                 sellVehData.price = tonumber(v["price"])
                             end
                         end
-                    DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, '[~g~E~w~] - Sell Vehicle To Dealer For ~g~$'..math.floor(sellVehData.price / 2))
+                    DrawText3Ds(Config.SellVehicleBack.x, Config.SellVehicleBack.y, Config.SellVehicleBack.z, Lang:t('info.sell_vehicle_to_dealer', { value = math.floor(sellVehData.price / 2) }))
                     if IsControlJustPressed(0, 38) then
                         QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
                             if owned then
                                 if balance < 1 then
                                     SellToDealer(sellVehData, GetVehiclePedIsIn(ped))
                                 else
-                                    QBCore.Functions.Notify('You must finish paying off this vehicle, Before you can sell it..', 'error', 3500)
+                                    QBCore.Functions.Notify(Lang:t('error.finish_payments'), 'error', 3500)
                                 end
                             else
-                                QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                QBCore.Functions.Notify(Lang:t('error.not_your_vehicle'), 'error', 3500)
                             end
                         end, sellVehData.plate)
                     end
@@ -304,10 +304,10 @@ CreateThread(function()
                     if dstCheck <= 2 then
                         if not IsPedInAnyVehicle(ped) then
                             if not isConfirming then
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, '[~g~E~w~] - View Vehicle Contract')
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, QBCore.Shared.Vehicles[Config.OccasionSlots[i]["model"]]["name"]..', Price: ~g~$'..Config.OccasionSlots[i]["price"])
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, Lang:t('info.view_contract'))
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, Lang:t('info.model_price', { value = QBCore.Shared.Vehicles[Config.OccasionSlots[i]["model"]]["name"], value2 = Config.OccasionSlots[i]["price"] }))
                                 if Config.OccasionSlots[i]["owner"] == QBCore.Functions.GetPlayerData().citizenid then
-                                    DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.05, '[~r~G~w~] - Cancel Vehicle Sale')
+                                    DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.05, Lang:t('info.cancel_sale'))
                                     if IsControlJustPressed(0, 47) then
                                         isConfirming = true
                                     end
@@ -321,10 +321,10 @@ CreateThread(function()
                                         else
                                             info = {}
                                             info.charinfo = {
-                                                firstname = "not",
-                                                lastname = "known",
-                                                account = "Account not known..",
-                                                phone = "telephone number not known.."
+                                                firstname = Lang:t('charinfo.firstname'),
+                                                lastname = Lang:t('charinfo.lastname'),
+                                                account = Lang:t('charinfo.account'),
+                                                phone = Lang:t('charinfo.phone')
                                             }
                                         end
 
@@ -332,8 +332,8 @@ CreateThread(function()
                                     end, Config.OccasionSlots[currentVehicle]["owner"])
                                 end
                             else
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, 'Are you sure you no longer want to sell your vehicle?')
-                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, '[~g~7~w~] - Yes | [~r~8~w~] - No')
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.45, Lang:t('info.are_you_sure'))
+                                DrawText3Ds(vehPos.x, vehPos.y, vehPos.z + 1.25, Lang:t('info.yes_no'))
                                 if IsDisabledControlJustPressed(0, 161) then
                                     isConfirming = false
                                     currentVehicle = i
@@ -352,7 +352,7 @@ CreateThread(function()
                 if sellDist <= 13.0 and IsPedInAnyVehicle(ped) then
                     DrawMarker(2, Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z + 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.6, 255, 0, 0, 155, false, false, false, true, false, false, false)
                     if sellDist <= 3.5 and IsPedInAnyVehicle(ped) then
-                        DrawText3Ds(Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z, '[~g~E~w~] - Place Vehicle For Sale By Owner')
+                        DrawText3Ds(Config.SellVehicle.x, Config.SellVehicle.y, Config.SellVehicle.z, Lang:t('info.place_vehicle_for_sale'))
                         if IsControlJustPressed(0, 38) then
                             local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(ped))
                             QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
@@ -362,14 +362,14 @@ CreateThread(function()
                                             if vehicles == nil or #vehicles < #Config.OccasionSlots then
                                                 openSellContract(true)
                                             else
-                                                QBCore.Functions.Notify('There is not space for your car on the lot!', 'error', 3500)
+                                                QBCore.Functions.Notify(Lang:t('error.no_space_on_lot'), 'error', 3500)
                                             end
                                     end)
                                     else
-                                        QBCore.Functions.Notify('You must finish paying off this vehicle, Before you can sell it..', 'error', 3500)
+                                        QBCore.Functions.Notify(Lang:t('error.finish_payments'), 'error', 3500)
                                     end
                                 else
-                                    QBCore.Functions.Notify('This is not your vehicle..', 'error', 3500)
+                                    QBCore.Functions.Notify(Lang:t('error.not_your_vehicle'), 'error', 3500)
                                 end
                             end, VehiclePlate)
                         end
