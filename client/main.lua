@@ -32,7 +32,7 @@ local function spawnOccasionsVehicles(vehicles)
                 Wait(0)
             end
 
-            oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i].loc.x, oSlot[i].loc.y, oSlot[i].loc.z, false, false)
+            oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i].loc.x, oSlot[i].loc.y, oSlot[i].loc.z, oSlot[i].h, false, false)
 
             oSlot[i]["price"] = vehicles[i].price
             oSlot[i]["owner"] = vehicles[i].seller
