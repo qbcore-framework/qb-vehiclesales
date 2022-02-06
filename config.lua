@@ -5,6 +5,8 @@ Config.SellVehicle = vector3(1235.43, 2730.95, 37.91)
 Config.SellVehicleBack = vector3(1235.1, 2740.7, 37.68)
 Config.BuyVehicle = vector4(1213.31, 2735.4, 38.27, 182.5)
 
+Config.SlotNumber = 36
+
 Config.OccasionSlots = {
     { loc = vector3(1237.07, 2699, 38.27), h = 1.5 },
     { loc = vector3(1232.98, 2698.92, 38.27), h = 2.5 },
