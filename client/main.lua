@@ -31,27 +31,28 @@ local function spawnOccasionsVehicles(vehicles)
             while not HasModelLoaded(model) do
                 Wait(0)
             end
+	    if i <= Config.SlotNumber then
+		    oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i].loc.x, oSlot[i].loc.y, oSlot[i].loc.z, false, false)
 
-            oSlot[i]["occasionid"] = CreateVehicle(model, oSlot[i].loc.x, oSlot[i].loc.y, oSlot[i].loc.z, false, false)
+		    oSlot[i]["price"] = vehicles[i].price
+		    oSlot[i]["owner"] = vehicles[i].seller
+		    oSlot[i]["model"] = vehicles[i].model
+		    oSlot[i]["plate"] = vehicles[i].plate
+		    oSlot[i]["oid"]   = vehicles[i].occasionid
+		    oSlot[i]["desc"]  = vehicles[i].description
+		    oSlot[i]["mods"]  = vehicles[i].mods
 
-            oSlot[i]["price"] = vehicles[i].price
-            oSlot[i]["owner"] = vehicles[i].seller
-            oSlot[i]["model"] = vehicles[i].model
-            oSlot[i]["plate"] = vehicles[i].plate
-            oSlot[i]["oid"]   = vehicles[i].occasionid
-            oSlot[i]["desc"]  = vehicles[i].description
-            oSlot[i]["mods"]  = vehicles[i].mods
+		    QBCore.Functions.SetVehicleProperties(oSlot[i]["occasionid"], json.decode(oSlot[i]["mods"]))
 
-            QBCore.Functions.SetVehicleProperties(oSlot[i]["occasionid"], json.decode(oSlot[i]["mods"]))
+		    SetModelAsNoLongerNeeded(model)
+		    SetVehicleOnGroundProperly(oSlot[i]["occasionid"])
+		    SetEntityInvincible(oSlot[i]["occasionid"],true)
+		    SetEntityHeading(oSlot[i]["occasionid"], oSlot[i].h)
+		    SetVehicleDoorsLocked(oSlot[i]["occasionid"], 3)
 
-            SetModelAsNoLongerNeeded(model)
-            SetVehicleOnGroundProperly(oSlot[i]["occasionid"])
-            SetEntityInvincible(oSlot[i]["occasionid"],true)
-            SetEntityHeading(oSlot[i]["occasionid"], oSlot[i].h)
-            SetVehicleDoorsLocked(oSlot[i]["occasionid"], 3)
-
-            SetVehicleNumberPlateText(oSlot[i]["occasionid"], vehicles[i].occasionid)
-            FreezeEntityPosition(oSlot[i]["occasionid"],true)
+		    SetVehicleNumberPlateText(oSlot[i]["occasionid"], vehicles[i].occasionid)
+		    FreezeEntityPosition(oSlot[i]["occasionid"],true)
+	    end
         end
     end
 end
