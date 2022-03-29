@@ -20,7 +20,7 @@ end
 
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
     local result = MySQL.Sync.fetchAll('SELECT * FROM occasion_vehicles', {})
-    if result[1] ~= nil then
+    if result[1] then
         cb(result)
     else
         cb(nil)
@@ -29,7 +29,7 @@ end)
 
 QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", function(source, cb, citizenid)
     MySQL.Async.fetchAll('SELECT * FROM players WHERE citizenid = ?', {citizenid}, function(result)
-        if result[1] ~= nil then
+        if result[1] then
             cb(result[1])
         else
             cb(nil)
@@ -49,9 +49,8 @@ end)
 RegisterNetEvent('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local result = MySQL.Sync.fetchAll('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',
-        {vehicleData['plate'], vehicleData["oid"]})
-    if result[1] ~= nil then
+    local result = MySQL.Sync.fetchAll('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?', {vehicleData['plate'], vehicleData["oid"]})
+    if result[1] then
         if result[1].seller == Player.PlayerData.citizenid then
             MySQL.Async.insert(
                 'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -78,13 +77,19 @@ RegisterNetEvent('qb-occasions:server:sellVehicle', function(vehiclePrice, vehic
     TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
 end)
 
-RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vData)
+RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local price = math.floor(vData.price / 2)
-    local plate = vData.plate
-    Player.Functions.AddMoney('bank', price)
-    TriggerClientEvent('QBCore:Notify', src, Lang:t('success.sold_car_for_price', { value = price }), 'success', 5500)
+    local price
+    local plate = vehData.plate
+    for k, v in pairs(QBCore.Shared.Vehicles) do
+        if tonumber(v["hash"]) == vehData.model then
+            price = tonumber(v["price"])
+        end
+    end
+    local payout = price / 2
+    Player.Functions.AddMoney('bank', payout)
+    TriggerClientEvent('QBCore:Notify', src, Lang:t('success.sold_car_for_price', { value = payout }), 'success', 5500)
     MySQL.Async.execute('DELETE FROM player_vehicles WHERE plate = ?', {plate})
 end)
 
@@ -92,7 +97,7 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local result = MySQL.Sync.fetchAll('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',{vehicleData['plate'], vehicleData["oid"]})
-    if result[1] ~= nil and next(result[1]) ~= nil then
+    if result[1] and next(result[1]) then
         if Player.PlayerData.money.bank >= result[1].price then
             local SellerCitizenId = result[1].seller
             local SellerData = QBCore.Functions.GetPlayerByCitizenId(SellerCitizenId)
@@ -107,11 +112,11 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
                     result[1]["plate"],
                     0
                 })
-            if SellerData ~= nil then
+            if SellerData then
                 SellerData.Functions.AddMoney('bank', NewPrice)
             else
                 local BuyerData = MySQL.Sync.fetchAll('SELECT * FROM players WHERE citizenid = ?',{SellerCitizenId})
-                if BuyerData[1] ~= nil then
+                if BuyerData[1] then
                     local BuyerMoney = json.decode(BuyerData[1].money)
                     BuyerMoney.bank = BuyerMoney.bank + NewPrice
                     MySQL.Async.execute('UPDATE players SET money = ? WHERE citizenid = ?', {json.encode(BuyerMoney), SellerCitizenId})
