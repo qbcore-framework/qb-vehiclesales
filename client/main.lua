@@ -1,10 +1,11 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local occasionVehicles = {}
 local Zone = nil
+local TextShown = false
 local AcitveZone = {}
 local CurrentVehicle = {}
-local TextShown = false
 local SpawnZone = {}
+local EntityZones = {}
+local occasionVehicles = {}
 
 -- Functions
 
@@ -40,6 +41,21 @@ local function spawnOccasionsVehicles(vehicles)
                 SetVehicleDoorsLocked(occasionVehicles[Zone][i].car, 3)
                 SetVehicleNumberPlateText(occasionVehicles[Zone][i].car, occasionVehicles[Zone][i].oid)
                 FreezeEntityPosition(occasionVehicles[Zone][i].car,true)
+                if Config.UseTarget then
+                    if not EntityZones then EntityZones = {} end
+                    EntityZones[i] = exports['qb-target']:AddTargetEntity(occasionVehicles[Zone][i].car, {
+                        options = {
+                            {
+                                type = "client",
+                                event = "qb-vehiclesales:client:OpenContract",
+                                icon = "fas fa-car",
+                                label = "View Contract",
+                                Contract = i
+                            }
+                        },
+                        distance = 2.0
+                    })
+                end
             end
         end
     end
@@ -50,10 +66,16 @@ local function despawnOccasionsVehicles()
     for i = 1, #oSlot, 1 do
         local loc = oSlot[i]
         local oldVehicle = GetClosestVehicle(loc.x, loc.y, loc.z, 1.3, 0, 70)
+        
         if oldVehicle then
             QBCore.Functions.DeleteVehicle(oldVehicle)
         end
+
+        if EntityZones[i] and Config.UseTarget then
+            exports['qb-target']:RemoveZone(EntityZones[i])
+        end
     end
+    EntityZones = {}
 end
 
 local function openSellContract(bool)
@@ -304,22 +326,25 @@ end)
 
 RegisterNetEvent('qb-vehiclesales:client:OpenContract', function(data)
     CurrentVehicle = occasionVehicles[Zone][data.Contract]
+    if CurrentVehicle then
+        QBCore.Functions.TriggerCallback('qb-occasions:server:getSellerInformation', function(info)
+            if info then
+                info.charinfo = json.decode(info.charinfo)
+            else
+                info = {}
+                info.charinfo = {
+                    firstname = Lang:t('charinfo.firstname'),
+                    lastname = Lang:t('charinfo.lastname'),
+                    account = Lang:t('charinfo.account'),
+                    phone = Lang:t('charinfo.phone')
+                }
+            end
 
-    QBCore.Functions.TriggerCallback('qb-occasions:server:getSellerInformation', function(info)
-        if info then
-            info.charinfo = json.decode(info.charinfo)
-        else
-            info = {}
-            info.charinfo = {
-                firstname = Lang:t('charinfo.firstname'),
-                lastname = Lang:t('charinfo.lastname'),
-                account = Lang:t('charinfo.account'),
-                phone = Lang:t('charinfo.phone')
-            }
-        end
-
-        openBuyContract(info, CurrentVehicle)
-    end, CurrentVehicle.owner)
+            openBuyContract(info, CurrentVehicle)
+        end, CurrentVehicle.owner)
+    else
+        QBCore.Functions.Notify('This vehicle is NOT for sale!', 'error', 7500)
+    end
 end)
 
 RegisterNetEvent('qb-occasions:client:MainMenu', function()
@@ -383,27 +408,8 @@ CreateThread(function()
                 end
             end
         end)
-        for k, v in pairs(Config.Zones[_].VehicleSpots) do
-            if Config.UseTarget then 
-                exports['qb-target']:AddBoxZone("Occasions"..k, vector3(v.x, v.y, v.z), 5.0, 2.5, { 
-                    name = "Occasions"..k, 
-                    heading = v.w, 
-                    debugPoly = false, 
-                    minZ = v.z-2, 
-                    maxZ = v.z+2, 
-                    }, {
-                    options = { 
-                    { 
-                        type = "client",
-                        event = "qb-vehiclesales:client:OpenContract",
-                        icon = "fas fa-car",
-                        label = "View Contract",
-                        Contract = k
-                    }
-                    },
-                    distance = 1.0,
-                })
-            else
+        if not Config.UseTarget then
+            for k, v in pairs(Config.Zones[_].VehicleSpots) do
                 local VehicleZones = BoxZone:Create(vector3(v.x, v.y, v.z), 4.3, 3.6, {
                     name="VehicleSpot".._..k,
                     debugPoly = false,
