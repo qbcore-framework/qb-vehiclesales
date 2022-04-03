@@ -62,6 +62,7 @@ local function spawnOccasionsVehicles(vehicles)
 end
 
 local function despawnOccasionsVehicles()
+    if not Zone then return end
     local oSlot = Config.Zones[Zone].VehicleSpots
     for i = 1, #oSlot, 1 do
         local loc = oSlot[i]
