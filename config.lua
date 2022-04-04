@@ -1,6 +1,6 @@
 Config = Config or {}
 
-Config.UseTarget = GetConvar('UseTarget', 'false')
+Config.UseTarget = GetConvar('UseTarget', 'false') == 'true'
 
 Config.Zones = {
     ["SandyOccasions"] = {
