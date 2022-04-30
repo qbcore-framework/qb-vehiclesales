@@ -80,10 +80,10 @@ end)
 RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local price
+    local price = 0
     local plate = vehData.plate
     for k, v in pairs(QBCore.Shared.Vehicles) do
-        if tonumber(v["hash"]) == vehData.model then
+        if GetHashKey(v["hash"]) == vehData.model then
             price = tonumber(v["price"])
         end
     end
