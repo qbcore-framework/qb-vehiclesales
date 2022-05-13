@@ -20,7 +20,7 @@ local function spawnOccasionsVehicles(vehicles)
                 while not HasModelLoaded(model) do
                     Wait(0)
                 end
-                occasionVehicles[Zone][i] = { 
+                occasionVehicles[Zone][i] = {
                     car   = CreateVehicle(model, oSlot[i].x, oSlot[i].y, oSlot[i].z, false, false),
                     loc   = vector3(oSlot[i].x, oSlot[i].y, oSlot[i].z),
                     price = vehicles[i].price,
@@ -174,7 +174,7 @@ local function CreateZones()
         })
 
         SellSpot:onPlayerInOut(function(isPointInside)
-            if isPointInside and zone ~= k then
+            if isPointInside and Zone ~= k then
                 Zone = k
                 QBCore.Functions.TriggerCallback('qb-occasions:server:getVehicles', function(vehicles)
                     despawnOccasionsVehicles()
@@ -190,7 +190,7 @@ local function CreateZones()
 end
 
 local function DeleteZones()
-    for k, v in pairs(AcitveZone) do
+    for k, _ in pairs(AcitveZone) do
         AcitveZone[k]:destroy()
     end
     AcitveZone = {}
@@ -200,7 +200,7 @@ local function IsCarSpawned(Car)
     local bool = false
 
     if occasionVehicles then
-        for k, v in pairs(occasionVehicles[Zone]) do
+        for k, _ in pairs(occasionVehicles[Zone]) do
             if k == Car then
                 bool = true
                 break
@@ -218,12 +218,12 @@ RegisterNUICallback('sellVehicle', function(data, cb)
     cb('ok')
 end)
 
-RegisterNUICallback('close', function(data, cb)
+RegisterNUICallback('close', function(_, cb)
     SetNuiFocus(false, false)
     cb('ok')
 end)
 
-RegisterNUICallback('buyVehicle', function(data, cb)
+RegisterNUICallback('buyVehicle', function(_, cb)
     TriggerServerEvent('qb-occasions:server:buyVehicle', CurrentVehicle)
     cb('ok')
 end)
@@ -308,7 +308,7 @@ RegisterNetEvent('qb-vehiclesales:client:SellVehicle', function()
     local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(PlayerPedId()))
     QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
         if owned then
-            if balance < 1 then 
+            if balance < 1 then
                 QBCore.Functions.TriggerCallback('qb-occasions:server:getVehicles', function(vehicles)
                     if vehicles == nil or #vehicles < #Config.Zones[Zone].VehicleSpots then
                         openSellContract(true)
@@ -376,7 +376,7 @@ end)
 -- Threads
 
 CreateThread(function()
-    for _, cars in pairs(Config.Zones) do 
+    for _, cars in pairs(Config.Zones) do
         local OccasionBlip = AddBlipForCoord(cars.SellVehicle.x, cars.SellVehicle.y, cars.SellVehicle.z)
         SetBlipSprite (OccasionBlip, 326)
         SetBlipDisplay(OccasionBlip, 4)
@@ -414,8 +414,8 @@ CreateThread(function()
                 local VehicleZones = BoxZone:Create(vector3(v.x, v.y, v.z), 4.3, 3.6, {
                     name="VehicleSpot".._..k,
                     debugPoly = false,
-                    minZ = v.z-2, 
-                    maxZ = v.z+2, 
+                    minZ = v.z-2,
+                    maxZ = v.z+2,
                 })
         
                 VehicleZones:onPlayerInOut(function(isPointInside)
