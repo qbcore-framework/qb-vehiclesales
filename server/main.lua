@@ -18,7 +18,7 @@ end
 
 -- Callbacks
 
-QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(source, cb)
+QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(_, cb)
     local result = MySQL.Sync.fetchAll('SELECT * FROM occasion_vehicles', {})
     if result[1] then
         cb(result)
@@ -27,7 +27,7 @@ QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(sour
     end
 end)
 
-QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", function(source, cb, citizenid)
+QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", function(_, cb, citizenid)
     MySQL.Async.fetchAll('SELECT * FROM players WHERE citizenid = ?', {citizenid}, function(result)
         if result[1] then
             cb(result[1])
@@ -37,7 +37,7 @@ QBCore.Functions.CreateCallback("qb-occasions:server:getSellerInformation", func
     end)
 end)
 
-QBCore.Functions.CreateCallback("qb-vehiclesales:server:CheckModelName", function(source, cb, plate)
+QBCore.Functions.CreateCallback("qb-vehiclesales:server:CheckModelName", function(_, cb, plate)
     if plate then
         local ReturnData = MySQL.Sync.fetchScalar("SELECT vehicle FROM player_vehicles WHERE plate = ?", {plate})
         cb(ReturnData)
@@ -82,7 +82,7 @@ RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local Player = QBCore.Functions.GetPlayer(src)
     local price
     local plate = vehData.plate
-    for k, v in pairs(QBCore.Shared.Vehicles) do
+    for _, v in pairs(QBCore.Shared.Vehicles) do
         if tonumber(v["hash"]) == vehData.model then
             price = tonumber(v["price"])
         end

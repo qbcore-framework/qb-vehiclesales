@@ -12,7 +12,7 @@ shared_scripts {
 	'locales/en.lua'
 }
 
-client_scripts { 
+client_scripts {
 	'@PolyZone/client.lua',
 	'@PolyZone/BoxZone.lua',
 	'@PolyZone/EntityZone.lua',
