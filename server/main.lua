@@ -86,6 +86,7 @@ RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
         if QBCore.Shared.Vehicles[k]["hash"] == vehData.model then
             price = tonumber(QBCore.Shared.Vehicles[k]["price"])
         end
+        break
     end
     local payout = math.floor(tonumber(price * 0.5)) -- This will give you half of the cars value
     Player.Functions.AddMoney('bank', payout)
