@@ -80,14 +80,15 @@ end)
 RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local price
+    local price = 0
     local plate = vehData.plate
     for _, v in pairs(QBCore.Shared.Vehicles) do
-        if tonumber(v["hash"]) == vehData.model then
+        if v["hash"] == vehData.model then
             price = tonumber(v["price"])
+            break
         end
     end
-    local payout = price / 2
+    local payout = math.floor(tonumber(price * 0.5)) -- This will give you half of the cars value
     Player.Functions.AddMoney('bank', payout)
     TriggerClientEvent('QBCore:Notify', src, Lang:t('success.sold_car_for_price', { value = payout }), 'success', 5500)
     MySQL.query('DELETE FROM player_vehicles WHERE plate = ?', {plate})
