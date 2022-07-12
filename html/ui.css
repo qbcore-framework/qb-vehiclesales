@@ -100,7 +100,7 @@ input.vehicle-sell-price::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ 
     opacity: 1; /* Firefox */
 }
 
-#buy-vehicle {
+#buy-vehicle, #buy-vehicle-back {
     width: 60px;
     height: 35px;
     background: rgb(141, 141, 141);
@@ -110,13 +110,14 @@ input.vehicle-sell-price::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ 
     right: 0;
     border-radius: 2px;
     transition: all 0.1s ease-in-out;
+    user-select: none;
 }
 
-#buy-vehicle:hover {
+#buy-vehicle:hover, #buy-vehicle-back:hover {
     background: rgb(179, 179, 179);
 }
 
-#buy-vehicle > p {
+#buy-vehicle > p, #buy-vehicle-back > p {
     text-align: center;
     line-height: 2.9vh;
     color: white;
@@ -241,7 +242,7 @@ ul {
 table {
     font-family: 'Poppins';
     font-size: 12px;
-    
+
     border: solid;
     border-color: black;
     background: lightslategray;
@@ -255,9 +256,6 @@ table {
 .table-field-heading {
     font-weight: 1000;
 }
-
-
-
 
 #buy-price {
     position: absolute;
