@@ -9,6 +9,7 @@ var app = new Vue({
         licensePlate: "",
         vehicleDescription: "",
         sellPrice: "",
+        showTakeBackOption: false,
         errors: []
     },
     methods: {
@@ -22,7 +23,7 @@ var app = new Vue({
                         body: JSON.stringify({
                             price: this.sellPrice,
                             desc: this.vehicleDescription
-                        })                        
+                        })
                     };
                     fetch("https://qb-vehiclesales/sellVehicle", requestOptions);
                     this.close();
@@ -42,21 +43,26 @@ var app = new Vue({
             fetch("https://qb-vehiclesales/buyVehicle", requestOptions);
             this.close();
         },
-        close() {            
+        takeBack() {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            fetch("https://qb-vehiclesales/takeVehicleBack", requestOptions);
+            this.close();
+        },
+        close() {
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({})
             };
             fetch("https://qb-vehiclesales/close", requestOptions);
-            // .then(function(msg) {
-            //     console.log(msg);
-
-            // });
 
             this.resetForm();
             this.hideForm();
-            
+
         },
         resetForm() {
             this.sellerName = "";
@@ -70,7 +76,7 @@ var app = new Vue({
         hideForm() {
             document.body.style.display = "none";
         }
-        
+
     },
     computed: {
         tax() {
@@ -93,6 +99,8 @@ function setupForm(data) {
 
     app.mode = data.action;
 
+    app.showTakeBackOption = data.showTakeBackOption;
+
     app.bizName = data.bizName;
 
     app.sellerName = data.sellerData.firstname + " " + data.sellerData.lastname;
@@ -100,7 +108,7 @@ function setupForm(data) {
     app.phoneNumber = data.sellerData.phone;
     app.licensePlate = data.plate;
 
-    if(data.action === "buyVehicle") {
+    if (data.action === "buyVehicle") {
         app.vehicleDescription = data.vehicleData.desc;
         app.sellPrice = data.vehicleData.price;
     }
@@ -116,8 +124,7 @@ document.onreadystatechange = () => {
 
 /* Handle escape key press to close the menu */
 document.onkeyup = function (data) {
-    if (data.which == 27) {
-        app.close();
-        
-    }
+    if (data.key != "Escape") return;
+
+    app.close();
 };
