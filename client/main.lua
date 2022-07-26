@@ -67,7 +67,7 @@ local function despawnOccasionsVehicles()
     for i = 1, #oSlot, 1 do
         local loc = oSlot[i]
         local oldVehicle = GetClosestVehicle(loc.x, loc.y, loc.z, 1.3, 0, 70)
-        
+
         if oldVehicle then
             QBCore.Functions.DeleteVehicle(oldVehicle)
         end
@@ -235,7 +235,8 @@ RegisterNetEvent('qb-occasions:client:BuyFinished', function(vehdata)
 
     DoScreenFadeOut(250)
     Wait(500)
-    QBCore.Functions.SpawnVehicle(vehdata.model, function(veh)
+    QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
+        local veh = NetToVeh(netId)
         SetVehicleNumberPlateText(veh, vehdata.plate)
         SetEntityHeading(veh, Config.Zones[Zone].BuyVehicle.w)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
@@ -245,12 +246,12 @@ RegisterNetEvent('qb-occasions:client:BuyFinished', function(vehdata)
         SetVehicleEngineOn(veh, true, true)
         Wait(500)
         QBCore.Functions.SetVehicleProperties(veh, vehmods)
-    end, Config.Zones[Zone].BuyVehicle, true)
+    end, vehdata.model, Config.Zones[Zone].BuyVehicle, true)
     Wait(500)
     DoScreenFadeIn(250)
     CurrentVehicle = {}
 end)
- 
+
 RegisterNetEvent('qb-occasions:client:SellBackCar', function()
     local ped = PlayerPedId()
     if IsPedInAnyVehicle(ped, false) then
@@ -279,7 +280,8 @@ RegisterNetEvent('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
     local vehmods = json.decode(vehdata.mods)
     DoScreenFadeOut(250)
     Wait(500)
-    QBCore.Functions.SpawnVehicle(vehdata.model, function(veh)
+    QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
+        local veh = NetToVeh(netId)
         SetVehicleNumberPlateText(veh, vehdata.plate)
         SetEntityHeading(veh, Config.Zones[Zone].BuyVehicle.w)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
@@ -289,7 +291,7 @@ RegisterNetEvent('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
         SetVehicleEngineOn(veh, true, true)
         Wait(500)
         QBCore.Functions.SetVehicleProperties(veh, vehmods)
-    end, Config.Zones[Zone].BuyVehicle, true)
+    end, vehdata.model, Config.Zones[Zone].BuyVehicle, true)
     Wait(500)
     DoScreenFadeIn(250)
     CurrentVehicle = {}
@@ -417,7 +419,7 @@ CreateThread(function()
                     minZ = v.z-2,
                     maxZ = v.z+2,
                 })
-        
+
                 VehicleZones:onPlayerInOut(function(isPointInside)
                     if isPointInside and IsCarSpawned(k) then
                         exports['qb-core']:DrawText('[E] View Contract', 'left')
