@@ -8,14 +8,6 @@ local function generateOID()
     return "OC" .. num
 end
 
-local function escapeSqli(str)
-    local replacements = {
-        ['"'] = '\\"',
-        ["'"] = "\\'"
-    }
-    return str:gsub("['\"]", replacements) -- or string.gsub( source, "['\"]", replacements )
-end
-
 -- Callbacks
 
 QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(_, cb)
@@ -52,12 +44,8 @@ RegisterNetEvent('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local result = MySQL.query.await('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?', {vehicleData['plate'], vehicleData["oid"]})
     if result[1] then
         if result[1].seller == Player.PlayerData.citizenid then
-            MySQL.insert(
-                'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                {Player.PlayerData.license, Player.PlayerData.citizenid, vehicleData["model"],
-                 GetHashKey(vehicleData["model"]), vehicleData["mods"], vehicleData["plate"], 0})
-            MySQL.query('DELETE FROM occasion_vehicles WHERE occasionid = ? AND plate = ?',
-                {vehicleData["oid"], vehicleData['plate']})
+            MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {Player.PlayerData.license, Player.PlayerData.citizenid, vehicleData["model"], joaat(vehicleData["model"]), vehicleData["mods"], vehicleData["plate"], 0})
+            MySQL.query('DELETE FROM occasion_vehicles WHERE occasionid = ? AND plate = ?', {vehicleData["oid"], vehicleData['plate']})
             TriggerClientEvent("qb-occasions:client:ReturnOwnedVehicle", src, result[1])
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
         else
@@ -72,7 +60,7 @@ RegisterNetEvent('qb-occasions:server:sellVehicle', function(vehiclePrice, vehic
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     MySQL.query('DELETE FROM player_vehicles WHERE plate = ? AND vehicle = ?',{vehicleData.plate, vehicleData.model})
-    MySQL.insert('INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (?, ?, ?, ?, ?, ?, ?)',{Player.PlayerData.citizenid, vehiclePrice, escapeSqli(vehicleData.desc), vehicleData.plate, vehicleData.model,json.encode(vehicleData.mods), generateOID()})
+    MySQL.insert('INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (?, ?, ?, ?, ?, ?, ?)',{Player.PlayerData.citizenid, vehiclePrice, vehicleData.desc, vehicleData.plate, vehicleData.model,json.encode(vehicleData.mods), generateOID()})
     TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle for Sale", "red","**" .. GetPlayerName(src) .. "** has a " .. vehicleData.model .. " priced at " .. vehiclePrice)
     TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
 end)

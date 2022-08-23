@@ -85,6 +85,7 @@ local function openSellContract(bool)
     SetNuiFocus(bool, bool)
     SendNUIMessage({
         action = "sellVehicle",
+        showTakeBackOption = false,
         bizName = Config.Zones[Zone].BusinessName,
         sellerData = {
             firstname = pData.charinfo.firstname,
@@ -97,10 +98,12 @@ local function openSellContract(bool)
 end
 
 local function openBuyContract(sellerData, vehicleData)
+    local pData = QBCore.Functions.GetPlayerData()
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = "buyVehicle",
-        bizName = Config.BusinessName,
+        showTakeBackOption = sellerData.charinfo.firstname == pData.charinfo.firstname and sellerData.charinfo.lastname == pData.charinfo.lastname,
+        bizName = Config.Zones[Zone].BusinessName,
         sellerData = {
             firstname = sellerData.charinfo.firstname,
             lastname = sellerData.charinfo.lastname,
@@ -125,7 +128,7 @@ local function sellVehicleWait(price)
     PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
 end
 
-local function SellData(data,model)
+local function SellData(data, model)
     QBCore.Functions.TriggerCallback("qb-vehiclesales:server:CheckModelName",function(DataReturning)
         local vehicleData = {}
         vehicleData.ent = GetVehiclePedIsUsing(PlayerPedId())
@@ -157,7 +160,7 @@ local function Listen4Control(spot) -- Uses this to listen for controls to open 
                     end
                 end
             end
-            Wait(3)
+            Wait(0)
         end
     end)
 end
@@ -190,7 +193,7 @@ local function CreateZones()
 end
 
 local function DeleteZones()
-    for k, _ in pairs(AcitveZone) do
+    for k in pairs(AcitveZone) do
         AcitveZone[k]:destroy()
     end
     AcitveZone = {}
@@ -200,7 +203,7 @@ local function IsCarSpawned(Car)
     local bool = false
 
     if occasionVehicles then
-        for k, _ in pairs(occasionVehicles[Zone]) do
+        for k in pairs(occasionVehicles[Zone]) do
             if k == Car then
                 bool = true
                 break
@@ -225,6 +228,11 @@ end)
 
 RegisterNUICallback('buyVehicle', function(_, cb)
     TriggerServerEvent('qb-occasions:server:buyVehicle', CurrentVehicle)
+    cb('ok')
+end)
+
+RegisterNUICallback('takeVehicleBack', function(_, cb)
+    TriggerServerEvent('qb-occasions:server:ReturnVehicle', CurrentVehicle)
     cb('ok')
 end)
 
@@ -392,13 +400,13 @@ CreateThread(function()
 end)
 
 CreateThread(function()
-    for _, cars in pairs(Config.Zones) do
-        SpawnZone[_] = CircleZone:Create(vector3(cars.SellVehicle.x, cars.SellVehicle.y, cars.SellVehicle.z), 3.0, {
-            name="OCSell".._,
+    for k, cars in pairs(Config.Zones) do
+        SpawnZone[k] = CircleZone:Create(vector3(cars.SellVehicle.x, cars.SellVehicle.y, cars.SellVehicle.z), 3.0, {
+            name="OCSell"..k,
             debugPoly = false,
         })
 
-        SpawnZone[_]:onPlayerInOut(function(isPointInside)
+        SpawnZone[k]:onPlayerInOut(function(isPointInside)
             if isPointInside and IsPedInAnyVehicle(PlayerPedId(), false) then
                 exports['qb-core']:DrawText('[E] Sell Vehicle', 'left')
                 TextShown = true
@@ -412,19 +420,19 @@ CreateThread(function()
             end
         end)
         if not Config.UseTarget then
-            for k, v in pairs(Config.Zones[_].VehicleSpots) do
+            for k2, v in pairs(Config.Zones[k].VehicleSpots) do
                 local VehicleZones = BoxZone:Create(vector3(v.x, v.y, v.z), 4.3, 3.6, {
-                    name="VehicleSpot".._..k,
+                    name="VehicleSpot"..k..k2,
                     debugPoly = false,
                     minZ = v.z-2,
                     maxZ = v.z+2,
                 })
 
                 VehicleZones:onPlayerInOut(function(isPointInside)
-                    if isPointInside and IsCarSpawned(k) then
+                    if isPointInside and IsCarSpawned(k2) then
                         exports['qb-core']:DrawText('[E] View Contract', 'left')
                         TextShown = true
-                        Listen4Control(k)
+                        Listen4Control(k2)
                     else
                         listen = false
                         if TextShown then

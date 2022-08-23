@@ -38,20 +38,20 @@
                     </div>
                     <div class="form-entry">
                         <div class="form-field" v-if="mode==='sellVehicle'">
-                            <input type="text" 
-                                class="vehicle-description" 
-                                maxlength="500" 
+                            <input type="text"
+                                class="vehicle-description"
+                                maxlength="500"
                                 placeholder="Enter Your Vehicle Description Here, Maximum 500 Characters"
                                 v-model="vehicleDescription">
                         </div>
                         <span class="form-field-summary"v-if="mode==='sellVehicle'">(Vehicle Description. max 500)</span>
                         <div id="vehicle-plate" class="form-field" v-if="mode==='buyVehicle'">{{ vehicleDescription }}</div>
                     </div>
-                    
+
                     <div class="form-entry" v-if="mode==='sellVehicle'">
                         <table class="pricing-table centred-h">
-                            <tr><td><span class="table-field-heading">Selling Price:</span> 
-                                <input type="text" 
+                            <tr><td><span class="table-field-heading">Selling Price:</span>
+                                <input type="text"
                                     class="vehicle-sell-price"
                                     placeholder="Enter Vehicle Price Here"
                                     v-model="sellPrice">
@@ -67,9 +67,10 @@
                             <tr><td><span class="table-field-heading">Vehicle Price:</span><span id="tax"> &dollar; {{ sellPrice }}</span></td></tr>
                         </table>
                     </div>
-                    
+
                     <div class="btn" id="sell-vehicle" v-if="mode==='sellVehicle'" @click="sell(sellPrice)"><p>Sell</p></div>
                     <div class="btn" id="buy-vehicle" v-if="mode==='buyVehicle'" @click="buy()"><p>Buy</p></div>
+                    <div class="btn" id="buy-vehicle-back" v-if="showTakeBackOption" @click="takeBack()"><p>Take Back</p></div>
 
                     <div v-if="errors.length" class="errors centred-h">
                         <ul>
@@ -77,11 +78,11 @@
                         </ul>
                     </div>
                 </div>
-                
+
             </div>
 
         </div>
-        
+
         <script src="./vue.min.js"></script>
         <script src="./ui.js"></script>
     </body>
