@@ -5,6 +5,19 @@ local Translations = {
         not_enough_money = 'You dont have enough money',
         finish_payments = 'You must finish paying off this vehicle, Before you can sell it..',
         no_space_on_lot = 'There is not space for your car on the lot!'
+        not_in_veh = 'You are not in a vehicle!',
+        not_for_sale = 'This vehicle is NOT for sale!',
+    },
+    menu = {
+        view_contract = 'View Contract',
+        view_contract_int = '[E] View Contract',
+        sell_vehicle = 'Sell Vehicle',
+        sell_vehicle_help = 'Sell vehicle to fellow citizens!',
+        sell_back = 'Sell back car!',
+        sell_back_help = 'Sell your car straight back for a reduced price!',
+        interaction = '[E] Sell Vehicle',
+
+
     },
     success = {
         sold_car_for_price = 'You have sold your car for $%{value}',
