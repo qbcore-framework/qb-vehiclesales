@@ -49,7 +49,7 @@ local function spawnOccasionsVehicles(vehicles)
                                 type = "client",
                                 event = "qb-vehiclesales:client:OpenContract",
                                 icon = "fas fa-car",
-                                label = "View Contract",
+                                label = Lang:t("menu.view_contract"),
                                 Contract = i
                             }
                         },
@@ -156,7 +156,7 @@ local function Listen4Control(spot) -- Uses this to listen for controls to open 
                         TriggerEvent('qb-occasions:client:MainMenu')
                         --TriggerEvent('qb-vehiclesales:client:SellVehicle')
                     else
-                        QBCore.Functions.Notify("You are not in a vehicle!", "error", 4500)
+                        QBCore.Functions.Notify(Lang:t("error.not_in_veh"), "error", 4500)
                     end
                 end
             end
@@ -280,7 +280,7 @@ RegisterNetEvent('qb-occasions:client:SellBackCar', function()
             end
         end, vehicleData.plate)
     else
-        QBCore.Functions.Notify("You're not in a vehicle...", "error", 4500)
+        QBCore.Functions.Notify(Lang:t("error.not_in_veh"), "error", 4500)
     end
 end)
 
@@ -354,7 +354,7 @@ RegisterNetEvent('qb-vehiclesales:client:OpenContract', function(data)
             openBuyContract(info, CurrentVehicle)
         end, CurrentVehicle.owner)
     else
-        QBCore.Functions.Notify('This vehicle is NOT for sale!', 'error', 7500)
+        QBCore.Functions.Notify(Lang:t("error.not_for_sale"), 'error', 7500)
     end
 end)
 
@@ -365,15 +365,15 @@ RegisterNetEvent('qb-occasions:client:MainMenu', function()
             header = Config.Zones[Zone].BusinessName
         },
         {
-            header = "Sell Vehicle",
-            txt = "Sell vehicle to fellow citizens!",
+            header = Lang:t("menu.sell_vehicle"),
+            txt = Lang:t("menu.sell_vehicle_help"),
             params = {
                 event = 'qb-vehiclesales:client:SellVehicle',
             }
         },
         {
-            header = "Sell back car!",
-            txt = "Sell your car straight back for a reduced price!",
+            header = Lang:t("menu.sell_back"),
+            txt = Lang:t("menu.sell_back_help"),
             params = {
                 event = 'qb-occasions:client:SellBackCar',
             }
@@ -408,7 +408,7 @@ CreateThread(function()
 
         SpawnZone[k]:onPlayerInOut(function(isPointInside)
             if isPointInside and IsPedInAnyVehicle(PlayerPedId(), false) then
-                exports['qb-core']:DrawText('[E] Sell Vehicle', 'left')
+                exports['qb-core']:DrawText(Lang:t("menu.interaction"), 'left')
                 TextShown = true
                 Listen4Control()
             else
@@ -430,7 +430,7 @@ CreateThread(function()
 
                 VehicleZones:onPlayerInOut(function(isPointInside)
                     if isPointInside and IsCarSpawned(k2) then
-                        exports['qb-core']:DrawText('[E] View Contract', 'left')
+                        exports['qb-core']:DrawText(Lang:t("menu.view_contract_int"), 'left')
                         TextShown = true
                         Listen4Control(k2)
                     else
