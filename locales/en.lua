@@ -13,7 +13,7 @@ local Translations = {
     },
     info = {
         confirm_cancel = '~g~Y~w~ - Confirm / ~r~N~w~ - Cancel ~g~',
-        vehicle_returned = 'You vehicle is returned',
+        vehicle_returned = 'Your vehicle is returned',
         used_vehicle_lot = 'Used Car Lot',
         sell_vehicle_to_dealer = '[~g~E~w~] - Sell Vehicle To Dealer For ~g~$%{value}',
         view_contract = '[~g~E~w~] - View Vehicle Contract',
