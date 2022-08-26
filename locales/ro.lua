@@ -16,8 +16,6 @@ local Translations = {
         sell_back = 'Cumpara inapoi vehiculul!',
         sell_back_help = 'Cumpara-ti masina inapoi la un pret promotional!',
         interaction = '[E] Vinde vehicul',
-
-
     },
     success = {
         sold_car_for_price = 'Ai vandut vehiculul pentru suma de $%{value}',
@@ -48,7 +46,6 @@ local Translations = {
         message = 'Ai castigat suma de $%{value} din vanzarea vehiculului %{value2}.',
     }
 }
-
 Lang = Locale:new({
     phrases = Translations,
     warnOnMissing = true
