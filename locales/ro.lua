@@ -4,7 +4,7 @@ local Translations = {
         vehicle_does_not_exist = 'Vehiculul nu exista',
         not_enough_money = 'Nu ai suficienti bani',
         finish_payments = 'Trebuie sa achiti de platit ratele, inainte de a putea vinde vehiculul...',
-        no_space_on_lot = 'Din pacate, nu mai sunt spatii pentru a pune masina la vanzare!'
+        no_space_on_lot = 'Din pacate, nu mai sunt spatii pentru a pune masina la vanzare!',
         not_in_veh = 'Nu esti intr-un vehicul!',
         not_for_sale = 'Acest vehicul nu este de vanzare!',
     },
@@ -22,7 +22,7 @@ local Translations = {
     success = {
         sold_car_for_price = 'Ai vandut vehiculul pentru suma de $%{value}',
         car_up_for_sale = 'Vehiculul tau a fost pus la vanzare! Pretul - $%{value}',
-        vehicle_bought = 'Vehiculul a fost cumparat'
+        vehicle_bought = 'Vehiculul a fost cumparat',
     },
     info = {
         confirm_cancel = '~g~Y~w~ - Confirma / ~r~N~w~ - Anuleaza ~g~',
@@ -34,18 +34,18 @@ local Translations = {
         model_price = '%{value}, Pret: ~g~$%{value2}',
         are_you_sure = 'Esti sigur(a) ca nu mai vrei sa vinzi acest vehicul?',
         yes_no = '[~g~7~w~] - Da | [~r~8~w~] - Nu',
-        place_vehicle_for_sale = '[~g~E~w~] - Vanzare vehicul de la proprietar'
+        place_vehicle_for_sale = '[~g~E~w~] - Vanzare vehicul de la proprietar',
     },
     charinfo = {
         firstname = 'Necunoscut',
         lastname = 'Necunoscut',
         account = 'Necunoscut..',
-        phone = 'Necunoscut..'
+        phone = 'Necunoscut..',
     },
     mail = {
         sender = 'Larrys RV Sales',
         subject = 'Un vehicul a fost vandut!',
-        message = 'Ai castigat suma de $%{value} din vanzarea vehiculului %{value2}.'
+        message = 'Ai castigat suma de $%{value} din vanzarea vehiculului %{value2}.',
     }
 }
 
