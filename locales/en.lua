@@ -16,8 +16,6 @@ local Translations = {
         sell_back = 'Sell back car!',
         sell_back_help = 'Sell your car straight back for a reduced price!',
         interaction = '[E] Sell Vehicle',
-
-
     },
     success = {
         sold_car_for_price = 'You have sold your car for $%{value}',
@@ -48,7 +46,6 @@ local Translations = {
         message = 'You made $%{value} from the sale of your %{value2}.',
     }
 }
-
 Lang = Locale:new({
     phrases = Translations,
     warnOnMissing = true
