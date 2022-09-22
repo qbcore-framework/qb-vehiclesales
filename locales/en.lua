@@ -46,7 +46,8 @@ local Translations = {
         message = 'You made $%{value} from the sale of your %{value2}.',
     }
 }
-Lang = Locale:new({
+
+Lang = Lang or Locale:new({
     phrases = Translations,
     warnOnMissing = true
 })

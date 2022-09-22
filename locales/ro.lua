@@ -46,7 +46,11 @@ local Translations = {
         message = 'Ai castigat suma de $%{value} din vanzarea vehiculului %{value2}.',
     }
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+
+if GetConvar('qb_locale', 'en') == 'ro' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end
