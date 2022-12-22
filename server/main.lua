@@ -115,7 +115,7 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
             TriggerClientEvent("qb-occasions:client:BuyFinished", src, result[1])
             TriggerClientEvent('qb-occasion:client:refreshVehicles', -1)
             MySQL.query('DELETE FROM occasion_vehicles WHERE plate = ? AND occasionid = ?',{result[1].plate, result[1].occasionid})
-            TriggerEvent('qb-phone:server:sendNewMailToOffline', SellerCitizenId, {
+            exports['qb-phone']:sendNewMailToOffline(SellerCitizenId, {
                 sender = Lang:t('mail.sender'),
                 subject = Lang:t('mail.subject'),
                 message = Lang:t('mail.message', { value = NewPrice, value2 = QBCore.Shared.Vehicles[result[1].model].name})
