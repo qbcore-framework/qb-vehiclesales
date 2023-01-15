@@ -60,6 +60,7 @@ In order to make sure that your sales tax is consistent between what the server 
 
 2. Open qb-vehiclesales/html/ui.js and look for the following code (which commences on line 81): 
 
+```lua
     computed: {
         tax() {
             return (this.sellPrice / 100 * 19).toFixed(0);
@@ -71,6 +72,7 @@ In order to make sure that your sales tax is consistent between what the server 
             return (this.sellPrice / 100 * 77).toFixed(0);
         }
     }
+```
 
 3. Change the number "77" to (100 - Config.DealerCutPlayer). For example, if Config.DealerCutPlayer = 10 , then the number you should include there is "90"
 
