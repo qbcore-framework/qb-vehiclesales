@@ -53,7 +53,32 @@ ensure qb-vehiclesales
 ```
 
 ## Configuration
-- To adjust tax, go to qb-vehiclesales\server\main.lua row 85 and change "77" to your liking
+
+In order to make sure that your sales tax is consistent between what the server takes and what the UI form states, please follow the following steps:
+
+1. Set "Config.DealerCutPlayer" to the value (in percentage) that you want the dealer to take when a player sells a car to another player.
+
+2. Open qb-vehiclesales/html/ui.js and look for the following code (which commences on line 81): 
+
+    computed: {
+        tax() {
+            return (this.sellPrice / 100 * 19).toFixed(0);
+        },
+        mosleys() {
+            return (this.sellPrice / 100 * 4).toFixed(0);
+        },
+        total() {
+            return (this.sellPrice / 100 * 77).toFixed(0);
+        }
+    }
+
+3. Change the number "77" to (100 - Config.DealerCutPlayer). For example, if Config.DealerCutPlayer = 10 , then the number you should include there is "90"
+
+4. It does not matter how you assign the 10% cut between "tax" and "mosleys", these are simply charges the player will face. Again, for example, if Config.DealerCutPlayer = 10, then: 
+    - you can change the "19" in tax() to "5"
+    - you can change the "4" in mosleys() to "5"
+This will reflect the 10% cut the dealership takes. 
+
 ```
 Config = Config or {}
 

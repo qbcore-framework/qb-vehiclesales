@@ -10,12 +10,12 @@ local Translations = {
     },
     menu = {
         view_contract = 'View Contract',
-        view_contract_int = '[E] View Contract',
+        view_contract_int = '[E] - View Contract',
         sell_vehicle = 'Sell Vehicle',
         sell_vehicle_help = 'Sell vehicle to fellow citizens!',
         sell_back = 'Sell back car!',
         sell_back_help = 'Sell your car straight back for a reduced price!',
-        interaction = '[E] Sell Vehicle',
+        interaction = '[E] - Sell Vehicle',
     },
     success = {
         sold_car_for_price = 'You have sold your car for $%{value}',
@@ -23,9 +23,9 @@ local Translations = {
         vehicle_bought = 'Vehicle Bought',
     },
     info = {
-        confirm_cancel = '~g~Y~w~ - Confirm / ~r~N~w~ - Cancel ~g~',
+        confirm_cancel = '[~g~Y~w~] - Confirm / [~r~N~w~] - Cancel ~g~',
         vehicle_returned = 'Your vehicle is returned',
-        used_vehicle_lot = 'Used Car Lot',
+        used_vehicle_lot = 'Mosley\'s Used Car Lot',
         sell_vehicle_to_dealer = '[~g~E~w~] - Sell Vehicle To Dealer For ~g~$%{value}',
         view_contract = '[~g~E~w~] - View Vehicle Contract',
         cancel_sale = '[~r~G~w~] - Cancel Vehicle Sale',
@@ -41,7 +41,7 @@ local Translations = {
         phone = 'telephone number not known..',
     },
     mail = {
-        sender = 'Larrys RV Sales',
+        sender = 'Mosley\'s RV Sales',
         subject = 'You have sold a vehicle!',
         message = 'You made $%{value} from the sale of your %{value2}.',
     }
