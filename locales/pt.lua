@@ -4,11 +4,22 @@ local Translations = {
         vehicle_does_not_exist = 'Veículo não existe',
         not_enough_money = 'Não tens dinheiro suficiente',
         finish_payments = 'Tens que terminar de pagar este veículo antes de o conseguires vender...',
-        no_space_on_lot = 'Não existem lugares livres neste parque para o teu veículo!'
+        no_space_on_lot = 'Não existem lugares livres neste parque para o teu veículo!',
+        not_in_veh = 'Não se encontra num veículo!',
+        not_for_sale = 'Este veículo não se encontra à venda!'
+    },
+    menu = {
+        view_contract = 'Ver Contrato',
+        view_contract_int = '[E] Ver Contrato',
+        sell_vehicle = 'Vender veículo',
+        sell_vehicle_help = 'Vender veículo a concidadãos!',
+        sell_back = 'Vender veículo à concessionária!',
+        sell_back_help = 'Vender veículo agora a um preço reduzido',
+        interaction = '[E] Vender Veículo'
     },
     success = {
-        sold_car_for_price = 'Vendeste a tua viatura por $%{value}',
-        car_up_for_sale = 'A tua viatura foi colocada à venda! Preço - $%{value}',
+        sold_car_for_price = 'Vendeste o teu veículo por €%{value}',
+        car_up_for_sale = 'O teu veículo foi colocado à venda! Preço - €%{value}',
         vehicle_bought = 'Veículo Comprado'
     },
     info = {
@@ -24,15 +35,15 @@ local Translations = {
         place_vehicle_for_sale = '[~g~E~w~] - Colocar veículo à venda pelo dono'
     },
     charinfo = {
-        firstname = 'sem',
-        lastname = 'conhecimento',
+        firstname = 'Sem',
+        lastname = 'Conhecimento',
         account = 'Conta desconhecida...',
-        phone = 'número de telefone desconhecido...'
+        phone = 'Número de telefone desconhecido...'
     },
     mail = {
         sender = 'Vendas RV',
         subject = 'Vendeste um veículo!',
-        message = 'Fizeste $%{value} na venda do teu %{value2}.'
+        message = 'Fizeste €%{value} na venda do teu %{value2}.'
     }
 }
 
