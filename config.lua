@@ -1,5 +1,7 @@
 Config = Config or {}
 
+Config.LarryPercentage = 1.23 -- 23% of the vehicle price ( just visual )
+
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true'
 
 Config.Zones = {
