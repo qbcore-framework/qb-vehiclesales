@@ -31,7 +31,7 @@ Used Car Sale for QB-Core Framework :blue_car:
 ![Vehicle Sale Contract](https://imgur.com/1T8Xh8E.png)
 ![Sell Vehicle To Dealer](https://imgur.com/zpEeBwk.png)
 ![Vehicle Sold Mail](https://imgur.com/vvz2UM3.png)
-![Buy Vehicle](https://imgur.com/BEf5nDu.png)
+![Buy Vehicle](https://imgur.com/lwInYdy.png)
 ![Vehicle Actions](https://imgur.com/HMuXtBd.png)
 
 ## Features
