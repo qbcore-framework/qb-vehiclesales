@@ -27,10 +27,8 @@ server_scripts {
 }
 
 files {
-    'html/logo.svg',
     'html/ui.css',
     'html/ui.html',
-    'html/vue.min.js',
     'html/ui.js',
 }
 

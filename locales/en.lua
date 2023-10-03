@@ -7,6 +7,8 @@ local Translations = {
         no_space_on_lot = 'There is not space for your car on the lot!',
         not_in_veh = 'You are not in a vehicle!',
         not_for_sale = 'This vehicle is NOT for sale!',
+        set_price = 'You need to set a price!',
+        set_info = 'You need to set a description!',
     },
     menu = {
         view_contract = 'View Contract',

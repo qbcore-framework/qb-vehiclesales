@@ -81,40 +81,40 @@ end
 
 local function openSellContract(bool)
     local pData = QBCore.Functions.GetPlayerData()
-
-    SetNuiFocus(bool, bool)
-    SendNUIMessage({
-        action = "sellVehicle",
-        showTakeBackOption = false,
-        bizName = Config.Zones[Zone].BusinessName,
-        sellerData = {
+    QBCore.Functions.TriggerCallback("qb-vehiclesales:server:CheckModelName",function(modelname)
+        SetNuiFocus(bool, bool)
+        SendNUIMessage({
+            action = "sellVehicle",
+            percentage = Config.LarryPercentage,
+            vehicleModel = modelname,
             firstname = pData.charinfo.firstname,
             lastname = pData.charinfo.lastname,
             account = pData.charinfo.account,
-            phone = pData.charinfo.phone
-        },
-        plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId()))
-    })
+            phone = pData.charinfo.phone,
+            plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId())),
+            vehicleName = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+        })
+    end, GetVehicleNumberPlateText(GetVehiclePedIsUsing(PlayerPedId())))
 end
 
 local function openBuyContract(sellerData, vehicleData)
     local pData = QBCore.Functions.GetPlayerData()
+    local isOwner = false
+    if pData.citizenid == vehicleData.owner then isOwner = true end
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = "buyVehicle",
         showTakeBackOption = sellerData.charinfo.firstname == pData.charinfo.firstname and sellerData.charinfo.lastname == pData.charinfo.lastname,
-        bizName = Config.Zones[Zone].BusinessName,
-        sellerData = {
-            firstname = sellerData.charinfo.firstname,
-            lastname = sellerData.charinfo.lastname,
-            account = sellerData.charinfo.account,
-            phone = sellerData.charinfo.phone
-        },
-        vehicleData = {
-            desc = vehicleData.desc,
-            price = vehicleData.price
-        },
-        plate = vehicleData.plate
+
+        firstname_seller = sellerData.charinfo.firstname,
+        lastname_seller = sellerData.charinfo.lastname,
+        account_seller = sellerData.charinfo.account,
+        phone_seller = sellerData.charinfo.phone,
+        vehicle_name = vehicleData.name,
+        desc_seller = vehicleData.desc,
+        price_seller = vehicleData.price,
+        plate_seller = vehicleData.plate,
+        isOwner = isOwner
     })
 end
 
@@ -135,9 +135,9 @@ local function SellData(data, model)
         vehicleData.model = DataReturning
         vehicleData.plate = model
         vehicleData.mods = QBCore.Functions.GetVehicleProperties(vehicleData.ent)
-        vehicleData.desc = data.desc
-        TriggerServerEvent('qb-occasions:server:sellVehicle', data.price, vehicleData)
-        sellVehicleWait(data.price)
+        vehicleData.desc = data.vehicleInfo
+        TriggerServerEvent('qb-occasions:server:sellVehicle', data.vehiclePrice, vehicleData)
+        sellVehicleWait(data.vehiclePrice)
     end, model)
 end
 
@@ -215,25 +215,36 @@ end
 
 -- NUI Callbacks
 
-RegisterNUICallback('sellVehicle', function(data, cb)
-    local plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId())) --Getting the plate and sending to the function
-    SellData(data,plate)
-    cb('ok')
+RegisterNUICallback("action", function(data, cb)
+
+    if data.action == "close" then
+        SetNuiFocus(false, false)
+        TriggerEvent('qb-vehiclesales:client:CloseUI')
+    elseif data.action == "sellVehicle" then
+        if #data.vehicleInfo > 0 then
+            if tonumber(data.vehiclePrice) ~= nil then
+                local plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId()))
+                SellData(data,plate)
+            else
+                QBCore.Functions.Notify(Lang:t('error.set_price'), 'error', 3500)
+            end
+        else
+            QBCore.Functions.Notify(Lang:t('error.set_info'), 'error', 3500)
+        end
+    elseif data.action == "buyVehicle" then
+        TriggerServerEvent('qb-occasions:server:buyVehicle', CurrentVehicle)
+
+    elseif data.action == "takeVehicleBack" then
+        TriggerServerEvent('qb-occasions:server:ReturnVehicle', CurrentVehicle)
+    end
+
 end)
 
-RegisterNUICallback('close', function(_, cb)
-    SetNuiFocus(false, false)
-    cb('ok')
-end)
-
-RegisterNUICallback('buyVehicle', function(_, cb)
-    TriggerServerEvent('qb-occasions:server:buyVehicle', CurrentVehicle)
-    cb('ok')
-end)
-
-RegisterNUICallback('takeVehicleBack', function(_, cb)
-    TriggerServerEvent('qb-occasions:server:ReturnVehicle', CurrentVehicle)
-    cb('ok')
+RegisterNetEvent("qb-vehiclesales:client:CloseUI", function()
+    SetNuiFocus(false, false);
+    SendNUIMessage({ 
+        action = 'CloseSellUI',
+    })
 end)
 
 -- Events
@@ -267,7 +278,7 @@ RegisterNetEvent('qb-occasions:client:SellBackCar', function()
         local vehicle = GetVehiclePedIsIn(ped, false)
         vehicleData.model = GetEntityModel(vehicle)
         vehicleData.plate = GetVehicleNumberPlateText(vehicle)
-        QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
+        QBCore.Functions.TriggerCallback('qb-vehiclesales:server:checkVehicleOwner', function(owned, balance)
             if owned then
                 if balance < 1 then
                     TriggerServerEvent('qb-occasions:server:sellVehicleBack', vehicleData)
@@ -316,7 +327,7 @@ end)
 
 RegisterNetEvent('qb-vehiclesales:client:SellVehicle', function()
     local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(PlayerPedId()))
-    QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
+    QBCore.Functions.TriggerCallback('qb-vehiclesales:server:checkVehicleOwner', function(owned, balance)
         if owned then
             if balance < 1 then
                 QBCore.Functions.TriggerCallback('qb-occasions:server:getVehicles', function(vehicles)
