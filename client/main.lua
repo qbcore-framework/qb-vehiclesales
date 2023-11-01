@@ -36,20 +36,20 @@ local function spawnOccasionsVehicles(vehicles)
 
                 SetModelAsNoLongerNeeded(model)
                 SetVehicleOnGroundProperly(occasionVehicles[Zone][i].car)
-                SetEntityInvincible(occasionVehicles[Zone][i].car,true)
+                SetEntityInvincible(occasionVehicles[Zone][i].car, true)
                 SetEntityHeading(occasionVehicles[Zone][i].car, oSlot[i].w)
                 SetVehicleDoorsLocked(occasionVehicles[Zone][i].car, 3)
                 SetVehicleNumberPlateText(occasionVehicles[Zone][i].car, occasionVehicles[Zone][i].oid)
-                FreezeEntityPosition(occasionVehicles[Zone][i].car,true)
+                FreezeEntityPosition(occasionVehicles[Zone][i].car, true)
                 if Config.UseTarget then
                     if not EntityZones then EntityZones = {} end
                     EntityZones[i] = exports['qb-target']:AddTargetEntity(occasionVehicles[Zone][i].car, {
                         options = {
                             {
-                                type = "client",
-                                event = "qb-vehiclesales:client:OpenContract",
-                                icon = "fas fa-car",
-                                label = Lang:t("menu.view_contract"),
+                                type = 'client',
+                                event = 'qb-vehiclesales:client:OpenContract',
+                                icon = 'fas fa-car',
+                                label = Lang:t('menu.view_contract'),
                                 Contract = i
                             }
                         },
@@ -84,7 +84,7 @@ local function openSellContract(bool)
 
     SetNuiFocus(bool, bool)
     SendNUIMessage({
-        action = "sellVehicle",
+        action = 'sellVehicle',
         showTakeBackOption = false,
         bizName = Config.Zones[Zone].BusinessName,
         sellerData = {
@@ -101,7 +101,7 @@ local function openBuyContract(sellerData, vehicleData)
     local pData = QBCore.Functions.GetPlayerData()
     SetNuiFocus(true, true)
     SendNUIMessage({
-        action = "buyVehicle",
+        action = 'buyVehicle',
         showTakeBackOption = sellerData.charinfo.firstname == pData.charinfo.firstname and sellerData.charinfo.lastname == pData.charinfo.lastname,
         bizName = Config.Zones[Zone].BusinessName,
         sellerData = {
@@ -125,11 +125,11 @@ local function sellVehicleWait(price)
     Wait(1500)
     DoScreenFadeIn(250)
     QBCore.Functions.Notify(Lang:t('success.car_up_for_sale', { value = price }), 'success')
-    PlaySound(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 0, 0, 1)
+    PlaySound(-1, 'SELECT', 'HUD_FRONTEND_DEFAULT_SOUNDSET', 0, 0, 1)
 end
 
 local function SellData(data, model)
-    QBCore.Functions.TriggerCallback("qb-vehiclesales:server:CheckModelName",function(DataReturning)
+    QBCore.Functions.TriggerCallback('qb-vehiclesales:server:CheckModelName', function(DataReturning)
         local vehicleData = {}
         vehicleData.ent = GetVehiclePedIsUsing(PlayerPedId())
         vehicleData.model = DataReturning
@@ -148,7 +148,7 @@ local function Listen4Control(spot) -- Uses this to listen for controls to open 
         while listen do
             if IsControlJustReleased(0, 38) then -- E
                 if spot then
-                    local data = {Contract = spot}
+                    local data = { Contract = spot }
                     TriggerEvent('qb-vehiclesales:client:OpenContract', data)
                 else
                     if IsPedInAnyVehicle(PlayerPedId(), false) then
@@ -156,7 +156,7 @@ local function Listen4Control(spot) -- Uses this to listen for controls to open 
                         TriggerEvent('qb-occasions:client:MainMenu')
                         --TriggerEvent('qb-vehiclesales:client:SellVehicle')
                     else
-                        QBCore.Functions.Notify(Lang:t("error.not_in_veh"), "error", 4500)
+                        QBCore.Functions.Notify(Lang:t('error.not_in_veh'), 'error', 4500)
                     end
                 end
             end
@@ -171,7 +171,7 @@ local function CreateZones()
     for k, v in pairs(Config.Zones) do
         local SellSpot = PolyZone:Create(v.PolyZone, {
             name = k,
-            minZ = 	v.MinZ,
+            minZ = v.MinZ,
             maxZ = v.MaxZ,
             debugPoly = false
         })
@@ -217,7 +217,7 @@ end
 
 RegisterNUICallback('sellVehicle', function(data, cb)
     local plate = QBCore.Functions.GetPlate(GetVehiclePedIsUsing(PlayerPedId())) --Getting the plate and sending to the function
-    SellData(data,plate)
+    SellData(data, plate)
     cb('ok')
 end)
 
@@ -249,8 +249,8 @@ RegisterNetEvent('qb-occasions:client:BuyFinished', function(vehdata)
         SetEntityHeading(veh, Config.Zones[Zone].BuyVehicle.w)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
         SetVehicleFuelLevel(veh, 100)
-        QBCore.Functions.Notify(Lang:t('success.vehicle_bought'), "success", 2500)
-        TriggerEvent("vehiclekeys:client:SetOwner", vehdata.plate)
+        QBCore.Functions.Notify(Lang:t('success.vehicle_bought'), 'success', 2500)
+        TriggerEvent('vehiclekeys:client:SetOwner', vehdata.plate)
         SetVehicleEngineOn(veh, true, true)
         Wait(500)
         QBCore.Functions.SetVehicleProperties(veh, vehmods)
@@ -267,7 +267,7 @@ RegisterNetEvent('qb-occasions:client:SellBackCar', function()
         local vehicle = GetVehiclePedIsIn(ped, false)
         vehicleData.model = GetEntityModel(vehicle)
         vehicleData.plate = GetVehicleNumberPlateText(vehicle)
-        QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
+        QBCore.Functions.TriggerCallback('qb-occasions:server:checkVehicleOwner', function(owned, balance)
             if owned then
                 if balance < 1 then
                     TriggerServerEvent('qb-occasions:server:sellVehicleBack', vehicleData)
@@ -280,7 +280,7 @@ RegisterNetEvent('qb-occasions:client:SellBackCar', function()
             end
         end, vehicleData.plate)
     else
-        QBCore.Functions.Notify(Lang:t("error.not_in_veh"), "error", 4500)
+        QBCore.Functions.Notify(Lang:t('error.not_in_veh'), 'error', 4500)
     end
 end)
 
@@ -295,7 +295,7 @@ RegisterNetEvent('qb-occasions:client:ReturnOwnedVehicle', function(vehdata)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
         SetVehicleFuelLevel(veh, 100)
         QBCore.Functions.Notify(Lang:t('info.vehicle_returned'))
-        TriggerEvent("vehiclekeys:client:SetOwner", vehdata.plate)
+        TriggerEvent('vehiclekeys:client:SetOwner', vehdata.plate)
         SetVehicleEngineOn(veh, true, true)
         Wait(500)
         QBCore.Functions.SetVehicleProperties(veh, vehmods)
@@ -316,7 +316,7 @@ end)
 
 RegisterNetEvent('qb-vehiclesales:client:SellVehicle', function()
     local VehiclePlate = QBCore.Functions.GetPlate(GetVehiclePedIsIn(PlayerPedId()))
-    QBCore.Functions.TriggerCallback('qb-garage:server:checkVehicleOwner', function(owned, balance)
+    QBCore.Functions.TriggerCallback('qb-occasions:server:checkVehicleOwner', function(owned, balance)
         if owned then
             if balance < 1 then
                 QBCore.Functions.TriggerCallback('qb-occasions:server:getVehicles', function(vehicles)
@@ -354,7 +354,7 @@ RegisterNetEvent('qb-vehiclesales:client:OpenContract', function(data)
             openBuyContract(info, CurrentVehicle)
         end, CurrentVehicle.owner)
     else
-        QBCore.Functions.Notify(Lang:t("error.not_for_sale"), 'error', 7500)
+        QBCore.Functions.Notify(Lang:t('error.not_for_sale'), 'error', 7500)
     end
 end)
 
@@ -365,15 +365,15 @@ RegisterNetEvent('qb-occasions:client:MainMenu', function()
             header = Config.Zones[Zone].BusinessName
         },
         {
-            header = Lang:t("menu.sell_vehicle"),
-            txt = Lang:t("menu.sell_vehicle_help"),
+            header = Lang:t('menu.sell_vehicle'),
+            txt = Lang:t('menu.sell_vehicle_help'),
             params = {
                 event = 'qb-vehiclesales:client:SellVehicle',
             }
         },
         {
-            header = Lang:t("menu.sell_back"),
-            txt = Lang:t("menu.sell_back_help"),
+            header = Lang:t('menu.sell_back'),
+            txt = Lang:t('menu.sell_back_help'),
             params = {
                 event = 'qb-occasions:client:SellBackCar',
             }
@@ -388,12 +388,12 @@ end)
 CreateThread(function()
     for _, cars in pairs(Config.Zones) do
         local OccasionBlip = AddBlipForCoord(cars.SellVehicle.x, cars.SellVehicle.y, cars.SellVehicle.z)
-        SetBlipSprite (OccasionBlip, 326)
+        SetBlipSprite(OccasionBlip, 326)
         SetBlipDisplay(OccasionBlip, 4)
-        SetBlipScale  (OccasionBlip, 0.75)
+        SetBlipScale(OccasionBlip, 0.75)
         SetBlipAsShortRange(OccasionBlip, true)
         SetBlipColour(OccasionBlip, 3)
-        BeginTextCommandSetBlipName("STRING")
+        BeginTextCommandSetBlipName('STRING')
         AddTextComponentSubstringPlayerName(Lang:t('info.used_vehicle_lot'))
         EndTextCommandSetBlipName(OccasionBlip)
     end
@@ -402,13 +402,13 @@ end)
 CreateThread(function()
     for k, cars in pairs(Config.Zones) do
         SpawnZone[k] = CircleZone:Create(vector3(cars.SellVehicle.x, cars.SellVehicle.y, cars.SellVehicle.z), 3.0, {
-            name="OCSell"..k,
+            name = 'OCSell' .. k,
             debugPoly = false,
         })
 
         SpawnZone[k]:onPlayerInOut(function(isPointInside)
             if isPointInside and IsPedInAnyVehicle(PlayerPedId(), false) then
-                exports['qb-core']:DrawText(Lang:t("menu.interaction"), 'left')
+                exports['qb-core']:DrawText(Lang:t('menu.interaction'), 'left')
                 TextShown = true
                 Listen4Control()
             else
@@ -422,15 +422,15 @@ CreateThread(function()
         if not Config.UseTarget then
             for k2, v in pairs(Config.Zones[k].VehicleSpots) do
                 local VehicleZones = BoxZone:Create(vector3(v.x, v.y, v.z), 4.3, 3.6, {
-                    name="VehicleSpot"..k..k2,
+                    name = 'VehicleSpot' .. k .. k2,
                     debugPoly = false,
-                    minZ = v.z-2,
-                    maxZ = v.z+2,
+                    minZ = v.z - 2,
+                    maxZ = v.z + 2,
                 })
 
                 VehicleZones:onPlayerInOut(function(isPointInside)
                     if isPointInside and IsCarSpawned(k2) then
-                        exports['qb-core']:DrawText(Lang:t("menu.view_contract_int"), 'left')
+                        exports['qb-core']:DrawText(Lang:t('menu.view_contract_int'), 'left')
                         TextShown = true
                         Listen4Control(k2)
                     else
