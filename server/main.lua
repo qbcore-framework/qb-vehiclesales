@@ -88,7 +88,7 @@ RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
         end
     end
     local payout = math.floor(tonumber(price * 0.5)) -- This will give you half of the cars value
-    Player.Functions.AddMoney('bank', payout)
+    Player.Functions.AddMoney('bank', payout, 'sold vehicle back')
     TriggerClientEvent('QBCore:Notify', src, Lang:t('success.sold_car_for_price', { value = payout }), 'success', 5500)
     MySQL.query('DELETE FROM player_vehicles WHERE plate = ?', { plate })
 end)
@@ -102,7 +102,7 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
             local SellerCitizenId = result[1].seller
             local SellerData = QBCore.Functions.GetPlayerByCitizenId(SellerCitizenId)
             local NewPrice = math.ceil((result[1].price / 100) * 77)
-            Player.Functions.RemoveMoney('bank', result[1].price)
+            Player.Functions.RemoveMoney('bank', result[1].price, 'bought vehicle used lot')
             MySQL.insert(
                 'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
                     Player.PlayerData.license,
@@ -113,7 +113,7 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
                     0
                 })
             if SellerData then
-                SellerData.Functions.AddMoney('bank', NewPrice)
+                SellerData.Functions.AddMoney('bank', NewPrice, 'sold vehicle used lot')
             else
                 local BuyerData = MySQL.query.await('SELECT * FROM players WHERE citizenid = ?', { SellerCitizenId })
                 if BuyerData[1] then
