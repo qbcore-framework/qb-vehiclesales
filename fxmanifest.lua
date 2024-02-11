@@ -1,10 +1,9 @@
 fx_version 'cerulean'
 game 'gta5'
-
-description 'QB-VehicleSales'
+lua54 'yes'
+author 'Kakarot'
+description 'Allows players to set their vehicles on display for sale to other players'
 version '1.2.0'
-
-ui_page 'html/ui.html'
 
 shared_scripts {
     'config.lua',
@@ -26,6 +25,8 @@ server_scripts {
     'server/main.lua'
 }
 
+ui_page 'html/ui.html'
+
 files {
     'html/logo.svg',
     'html/ui.css',
@@ -33,5 +34,3 @@ files {
     'html/vue.min.js',
     'html/ui.js',
 }
-
-lua54 'yes'
