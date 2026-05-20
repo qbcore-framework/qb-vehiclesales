@@ -1,4 +1,5 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local QBCore = exports['qb-core']:GetCoreObject({ 'Functions' })
+local sharedVehicles = exports['qb-core']:GetShared('Vehicles')
 
 -- Functions
 
@@ -20,7 +21,7 @@ QBCore.Functions.CreateCallback('qb-occasions:server:getVehicles', function(_, c
 end)
 
 QBCore.Functions.CreateCallback('qb-occasions:server:checkVehicleOwner', function(source, cb, plate)
-    local pData = QBCore.Functions.GetPlayer(source)
+    local pData = exports['qb-core']:GetPlayer(source)
     MySQL.query('SELECT balance FROM player_vehicles WHERE plate = ? AND citizenid = ?', { plate, pData.PlayerData.citizenid }, function(result)
         if result[1] then
             cb(true, result[1].balance)
@@ -51,7 +52,7 @@ end)
 
 RegisterNetEvent('qb-occasions:server:ReturnVehicle', function(vehicleData)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = exports['qb-core']:GetPlayer(src)
     local result = MySQL.query.await('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?', { vehicleData['plate'], vehicleData['oid'] })
     if result[1] then
         if result[1].seller == Player.PlayerData.citizenid then
@@ -69,7 +70,7 @@ end)
 
 RegisterNetEvent('qb-occasions:server:sellVehicle', function(vehiclePrice, vehicleData)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = exports['qb-core']:GetPlayer(src)
     local ownsVehicle = MySQL.query.await('DELETE FROM player_vehicles WHERE plate = ? AND citizenid = ? and vehicle = ?', { vehicleData.plate, Player.PlayerData.citizenid, vehicleData.model })
     if ownsVehicle.affectedRows > 0 then
         MySQL.insert('INSERT INTO occasion_vehicles (seller, price, description, plate, model, mods, occasionid) VALUES (?, ?, ?, ?, ?, ?, ?)', { Player.PlayerData.citizenid, vehiclePrice, vehicleData.desc, vehicleData.plate, vehicleData.model, json.encode(vehicleData.mods), generateOID() })
@@ -83,10 +84,10 @@ end)
 
 RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = exports['qb-core']:GetPlayer(src)
     local price = 0
     local plate = vehData.plate
-    for _, v in pairs(QBCore.Shared.Vehicles) do
+    for _, v in pairs(sharedVehicles) do
         if v['hash'] == vehData.model then
             price = tonumber(v['price'])
             break
@@ -95,7 +96,7 @@ RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local ownsVehicle = MySQL.query.await('DELETE FROM player_vehicles WHERE plate = ? AND citizenid = ? and hash = ?', { plate, Player.PlayerData.citizenid, vehData.model })
     if ownsVehicle.affectedRows > 0 then
         local payout = math.floor(tonumber(price * 0.5))
-        Player.Functions.AddMoney('bank', payout, 'sold vehicle back')
+        Player.AddMoney('bank', payout, 'sold vehicle back')
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.sold_car_for_price', { value = payout }), 'success', 5500)
     else
         TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_your_vehicle'), 'error', 3500)
@@ -104,14 +105,14 @@ end)
 
 RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = exports['qb-core']:GetPlayer(src)
     local result = MySQL.query.await('SELECT * FROM occasion_vehicles WHERE plate = ? AND occasionid = ?', { vehicleData['plate'], vehicleData['oid'] })
     if result[1] and next(result[1]) then
         if Player.PlayerData.money.bank >= result[1].price then
             local SellerCitizenId = result[1].seller
             local SellerData = QBCore.Functions.GetPlayerByCitizenId(SellerCitizenId)
             local NewPrice = math.ceil((result[1].price / 100) * 77)
-            Player.Functions.RemoveMoney('bank', result[1].price, 'bought vehicle used lot')
+            Player.RemoveMoney('bank', result[1].price, 'bought vehicle used lot')
             MySQL.insert(
                 'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
                     Player.PlayerData.license,
@@ -138,7 +139,7 @@ RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
             exports['qb-phone']:sendNewMailToOffline(SellerCitizenId, {
                 sender = Lang:t('mail.sender'),
                 subject = Lang:t('mail.subject'),
-                message = Lang:t('mail.message', { value = NewPrice, value2 = QBCore.Shared.Vehicles[result[1].model].name })
+                message = Lang:t('mail.message', { value = NewPrice, value2 = sharedVehicles[result[1].model].name })
             })
         else
             TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_enough_money'), 'error', 3500)

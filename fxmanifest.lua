@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 author 'Kakarot'
 description 'Allows players to set their vehicles on display for sale to other players'
-version '1.2.0'
+version '1.5.0'
 
 shared_scripts {
     'config.lua',
@@ -18,11 +18,11 @@ client_scripts {
     '@PolyZone/EntityZone.lua',
     '@PolyZone/CircleZone.lua',
     '@PolyZone/ComboZone.lua',
-    'client/main.lua'
+    'client.lua'
 }
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/main.lua'
+    'server.lua'
 }
 
 ui_page 'html/ui.html'

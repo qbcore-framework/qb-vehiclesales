@@ -3,7 +3,7 @@ Config = Config or {}
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true'
 
 Config.Zones = {
-    ["SandyOccasions"] = {
+    ['SandyOccasions'] = {
         BusinessName = "Vehicle Sales Contract - Larry's Vehicle Sales",
         SellVehicle = vector4(1235.61, 2733.44, 37.4, 0.42),
         BuyVehicle = vector4(1213.31, 2735.4, 38.27, 182.5),
